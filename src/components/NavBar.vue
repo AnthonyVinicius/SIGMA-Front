@@ -3,7 +3,9 @@
 </script>
 
 <template>
-  <h1>SIGMA</h1>
+  <h1 class="text-3xl font-bold underline">
+    SIGMA
+  </h1>
 </template>
 
 <style scoped>
