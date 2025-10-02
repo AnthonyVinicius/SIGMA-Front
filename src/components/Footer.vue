@@ -2,7 +2,7 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
-                <!-- Logo -->
+
                 <div class="footer-logo">
                     <h3 class="footer-title">
                         <svg class="footer-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,7 +17,6 @@
                     </p>
                 </div>
 
-                <!-- Navegação -->
                 <div>
                     <h4 class="footer-subtitle">Navegação</h4>
                     <ul class="footer-list">
@@ -29,7 +28,6 @@
                     </ul>
                 </div>
 
-                <!-- Contato -->
                 <div>
                     <h4 class="footer-subtitle">Contato</h4>
                     <div class="footer-contact">
@@ -39,7 +37,6 @@
                     </div>
                 </div>
 
-                <!-- Redes sociais -->
                 <div>
                     <h4 class="footer-subtitle">Siga-nos</h4>
                     <div class="footer-social-row">
@@ -54,7 +51,6 @@
                 </div>
             </div>
 
-            <!-- Copy -->
             <div class="footer-bottom">
                 <p>&copy; {{ currentYear }} Sigma - IFPE Campus Palmares. Todos os direitos reservados.</p>
             </div>
