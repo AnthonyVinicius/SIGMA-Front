@@ -125,6 +125,7 @@ const navLinks = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/gerenciar-alunos", label: "Gerenciar Alunos" },
     { to: "/configuracoes", label: "Configurações" },
+    { to: "/test", label: "TestComponents" },
 ];
 
 const logout = () => {

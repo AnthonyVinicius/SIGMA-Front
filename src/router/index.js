@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
+import UserDashboard from "../views/UserDashboard.vue";
+import TestComponents from "../views/TestComponents.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -11,7 +12,12 @@ const router = createRouter({
     {
       path: "/dashboard",
       name: "Dashboard",
-      component: Dashboard,
+      component: UserDashboard,
+    },
+    {
+      path: "/test",
+      name: "TestComponent",
+      component: TestComponents,
     },
   ],
 });
