@@ -3,7 +3,11 @@ import BaseLayout from '../components/BaseLayout.vue';
 import BaseButton from '../components/BaseButton.vue';
 import LayoutChamado from '../components/LayoutChamado.vue';
 import StatusChamado from '../components/StatusChamado.vue';
-
+import andamento from '../img/Andamento.png'
+import finalizado from '../img/Finalizado.png'
+import pendente from '../img/Pendente.png'
+import qrcode from '../img/QRcode.png'
+import menu from '../img/Menu.png'
 </script>
 
 <template>
@@ -16,7 +20,7 @@ import StatusChamado from '../components/StatusChamado.vue';
                 <StatusChamado>
                     <template #logo>
                         <img class="w-15"
-                            src="C:\Users\antho\OneDrive\Documentos\Codes\SIGMA-Front\src\img\Pendente.png" alt="">
+                            :src= pendente alt="">
                     </template>
                     <template #title>
                         Chamado em Andamento
@@ -28,7 +32,7 @@ import StatusChamado from '../components/StatusChamado.vue';
                 <StatusChamado>
                     <template #logo>
                         <img class="w-15"
-                            src="C:\Users\antho\OneDrive\Documentos\Codes\SIGMA-Front\src\img\Andamento.png" alt="">
+                            :src=andamento alt="">
                     </template>
                     <template #title>
                         Chamado em Andamento
@@ -40,7 +44,7 @@ import StatusChamado from '../components/StatusChamado.vue';
                 <StatusChamado>
                     <template #logo>
                         <img class="w-15"
-                            src="C:\Users\antho\OneDrive\Documentos\Codes\SIGMA-Front\src\img\Finalizado.png" alt="">
+                            :src=finalizado alt="">
                     </template>
                     <template #title>
                         Chamado em Andamento
@@ -53,7 +57,7 @@ import StatusChamado from '../components/StatusChamado.vue';
             <div class="flex gap-10 justify-center">
                 <LayoutChamado>
                     <template #logo>
-                        <img class="w-10" src="C:\Users\antho\OneDrive\Documentos\Codes\SIGMA-Front\src\img\QRcode.png"
+                        <img class="w-10" :src=qrcode
                             alt="">
                     </template>
                     <template #title>
@@ -66,7 +70,7 @@ import StatusChamado from '../components/StatusChamado.vue';
 
                 <LayoutChamado>
                     <template #logo>
-                        <img class="w-10" src="C:\Users\antho\OneDrive\Documentos\Codes\SIGMA-Front\src\img\Menu.png"
+                        <img class="w-10" :src=menu
                             alt="">
                     </template>
                     <template #title>
