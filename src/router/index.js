@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import UserDashboard from "../views/UserDashboard.vue";
 import TestComponents from "../views/TestComponents.vue";
+import AdminDashboard from '../views/AdminDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,6 +19,11 @@ const router = createRouter({
       path: "/test",
       name: "TestComponent",
       component: TestComponents,
+    },
+    {
+      path: "/adminDashboard",
+      name: "AdminDashboard",
+      component: AdminDashboard,
     },
   ],
 });

@@ -7,7 +7,9 @@ import NavBar from './Navbar.vue'
     <div class="page-container">
         <main class="content">
             <NavBar />
-            <slot></slot>
+            <div class="px-20 py-10">
+                <slot></slot>
+            </div>
             <Footer></Footer>
         </main>
     </div>
