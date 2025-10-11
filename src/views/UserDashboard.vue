@@ -1,3 +1,5 @@
+// src/views/UserDashboard.vue
+
 <script setup>
 import {
     Hand,
@@ -19,19 +21,20 @@ const statusList = [
     { icon: CircleCheck, title: 'Chamado Finalizado', count: 5, color: 'text-green-500' },
 ]
 
-
 const quickActions = [
     {
         icon: QrCode,
         title: 'Escanear QR Code',
         description: 'Escaneie o QR Code de um local para reportar um problema',
         color: 'text-green-800',
+        path: '/reportar'
     },
     {
         icon: TextAlignJustify,
         title: 'Meus Chamados',
         description: 'Visualize o status dos seus chamados abertos',
         color: 'text-green-800',
+        path: '/meus-chamados'
     },
 ]
 
@@ -43,7 +46,7 @@ const recentCalls = [
         location: 'Banheiro 2º Andar',
         statusIcon: CircleAlert,
         statusColor: 'text-red-500',
-        date: '21/08/2025',
+        date: '21/10/2025',
     },
 ]
 </script>
@@ -67,13 +70,15 @@ const recentCalls = [
             </div>
 
             <div class="flex gap-10 justify-center">
-                <Actions v-for="action in quickActions" :key="action.title">
-                    <template #logo>
-                        <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
-                    </template>
-                    <template #title>{{ action.title }}</template>
-                    <template #description>{{ action.description }}</template>
-                </Actions>
+                <RouterLink v-for="action in quickActions" :key="action.title" :to="action.path">
+                    <Actions>
+                        <template #logo>
+                            <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
+                        </template>
+                        <template #title>{{ action.title }}</template>
+                        <template #description>{{ action.description }}</template>
+                    </Actions>
+                </RouterLink>
             </div>
 
             <div class=" bg-white p-5 rounded-md shadow-sm">
