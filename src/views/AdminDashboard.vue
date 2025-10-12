@@ -28,12 +28,15 @@ const adminActions = [
 
 const recentCalls = [
     {
+        id: 1,
         icon: Hand,
         title: 'Secador de mãos',
         description: 'Não liga',
         location: 'Banheiro 2º Andar',
-        statusIcon: CircleAlert,
-        statusColor: 'text-red-500',
+        priority: 'Normal',
+        priorityIcon: Wrench, // Passando o ícone de prioridade
+        status: 'aberto', // O status pode ser usado para a lógica do dropdown
+        counter: 15,
         date: '21/08/2025',
     },
 ]
@@ -65,20 +68,9 @@ const recentCalls = [
                     <RouterLink to="/" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <ItensTabelaChamado v-for="chamado in recentCalls" :key="chamado.title">
-                        <template #logo>
-                            <component :is="chamado.icon" class="text-green-800" />
-                        </template>
-                        <template #title>{{ chamado.title }}</template>
-                        <template #description>{{ chamado.description }}</template>
-                        <template #location>{{ chamado.location }}</template>
-                        <template #status>
-                            <component :is="chamado.statusIcon" :class="chamado.statusColor" />
-                        </template>
-                        <template #date>{{ chamado.date }}</template>
-                    </ItensTabelaChamado>
-                </div>
+               <div class="flex flex-col gap-3">
+    <ItensTabelaChamado v-for="chamado in recentCalls" :key="chamado.id" :item="chamado" />
+</div>
             </div>
         </div>
     </BaseLayout>
