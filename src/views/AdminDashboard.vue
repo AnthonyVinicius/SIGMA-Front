@@ -33,10 +33,8 @@ const recentCalls = [
         title: 'Secador de mãos',
         description: 'Não liga',
         location: 'Banheiro 2º Andar',
-        priority: 'Normal',
-        priorityIcon: Wrench, // Passando o ícone de prioridade
-        status: 'aberto', // O status pode ser usado para a lógica do dropdown
-        counter: 15,
+        priority: 'Normal', 
+        counter: 15, 
         date: '21/08/2025',
     },
 ]

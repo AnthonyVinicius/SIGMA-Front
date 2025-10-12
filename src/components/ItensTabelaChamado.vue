@@ -50,5 +50,5 @@ defineProps({
 </template>
 
 <style scoped>
-/* Estilos adicionais para garantir a fidelidade visual se necessário */
+
 </style>
