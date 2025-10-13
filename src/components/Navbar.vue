@@ -125,6 +125,8 @@ const navLinks = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/adminDashboard", label: "AdminDashboard" },
     { to: "/test", label: "TestComponents" },
+    { to: "/login", label: "Login" },
+    { to: "/reportar", label: " Reportar" },
 ];
 
 const logout = () => {
