@@ -1,61 +1,15 @@
 <script setup>
-import { adminActions, recentCalls, chamadosPorPrioridade, chamadosPorStatus, chamadosPorLocal } from '../mock/MockDB'
+import { RouterLink } from 'vue-router'
+import { adminActions, recentCalls, chamadosPorStatus, chamadosPorPrioridade, chamadosPorLocal } from '../mock/MockDB'
 import BaseLayout from '../components/BaseLayout.vue'
 import Actions from '../components/Actions.vue'
 import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
-import BaseChart from '../components/BaseChart.vue';
-
-
-// Dados dos gráficos
-//const chamadosPorPrioridade = ref({ labels: [], datasets: [] });
-//const chamadosPorStatus = ref({ labels: [], datasets: [] });
-//const chamadosPorLocal = ref({ labels: [], datasets: [] });
-
-
-// Carrega os dados dos gráficos da API
-//onMounted(async () => {
-//    try {
-//        const response = await apiService.get('/chamados/dashboard');
-        // Exemplo de retorno esperado:
-        // { prioridade: { labels: [...], data: [...] }, status: {...}, local: {...} }
-
-//        chamadosPorPrioridade.value = {
-//            labels: response.prioridade.labels,
-//            datasets: [{
-//                label: 'Chamados',
-//                data: response.prioridade.data,
-//                backgroundColor: ['#1C5E27','#f59e0b','#ef4444']
-//            }]
-//        };
-
-//        chamadosPorStatus.value = {
-//            labels: response.status.labels,
-//            datasets: [{
-//                label: 'Chamados',
-//                data: response.status.data,
-//                backgroundColor: ['#3b82f6','#f97316','#10b981']
-//            }]
-//        };
-
-//        chamadosPorLocal.value = {
-//            labels: response.local.labels,
-//            datasets: [{
-//                label: 'Chamados',
-//                data: response.local.data,
-//                backgroundColor: ['#8b5cf6','#ec4899','#22d3ee']
-//            }]
-//        };
-
-//    } catch (error) {
-//        console.error('Erro ao carregar dados do dashboard', error);
-//  }
-//});
+import BaseChart from '../components/BaseChart.vue'
 </script>
 
 <template>
   <BaseLayout>
     <div class="space-y-8">
-
       <header>
         <h1 class="text-2xl font-bold text-ponto-if-green">Dashboard do Administrador</h1>
         <p class="text-gray-600">Bem-vindo ao sistema de manutenção do IFPE</p>
@@ -82,36 +36,23 @@ import BaseChart from '../components/BaseChart.vue';
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
           <Actions v-for="action in adminActions" :key="action.title">
             <template #logo>
-              <component :is="action.icon" class="" :class="`${action.color} w-10 h-10`" />
+              <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
             </template>
             <template #title>{{ action.title }}</template>
             <template #description>{{ action.description }}</template>
           </Actions>
         </div>
       </section>
-
-      <div class=" bg-white p-5 rounded-md shadow-sm">
+      <section class="bg-white p-5 rounded-md shadow-sm">
         <div class="flex items-center mb-3">
-          <h2 class="text-lg font-semibold">Ultimos Chamados Assumidos</h2>
+          <h2 class="text-lg font-semibold">Últimos Chamados Assumidos</h2>
           <RouterLink to="/" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
         </div>
 
-        <div class="flex flex-col gap-2">
-          <ItensTabelaChamado v-for="chamado in recentCalls" :key="chamado.title">
-            <template #logo>
-              <component :is="chamado.icon" class="text-green-800" />
-            </template>
-            <template #title>{{ chamado.title }}</template>
-            <template #description>{{ chamado.description }}</template>
-            <template #location>{{ chamado.location }}</template>
-            <template #status>
-              <component :is="chamado.statusIcon" :class="chamado.statusColor" />
-            </template>
-            <template #date>{{ chamado.date }}</template>
-          </ItensTabelaChamado>
+        <div class="flex flex-col gap-3">
+          <ItensTabelaChamado v-for="chamado in recentCalls" :key="chamado.id" :item="chamado" />
         </div>
-      </div>
-
+      </section>
     </div>
   </BaseLayout>
 </template>

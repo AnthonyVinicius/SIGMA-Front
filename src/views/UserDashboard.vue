@@ -64,20 +64,9 @@ const quickActions = [
                     </RouterLink>
                 </div>
 
-                <div class="flex flex-col gap-3">
-                    <ItensTabelaChamado v-for="chamado in recentCalls" :key="chamado.title">
-                        <template #logo>
-                            <component :is="chamado.icon" class="text-green-800" />
-                        </template>
-                        <template #title>{{ chamado.title }}</template>
-                        <template #description>{{ chamado.description }}</template>
-                        <template #location>{{ chamado.location }}</template>
-                        <template #status>
-                            <component :is="chamado.statusIcon" :class="chamado.statusColor" />
-                        </template>
-                        <template #date>{{ chamado.date }}</template>
-                    </ItensTabelaChamado>
-                </div>
+               <div class="flex flex-col gap-3">
+    <ItensTabelaChamado v-for="chamado in recentCalls" :key="chamado.id" :item="chamado" />
+</div>
             </div>
         </div>
     </BaseLayout>
