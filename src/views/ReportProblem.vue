@@ -1,0 +1,145 @@
+<script setup>
+import { ref, onBeforeUnmount, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import BaseLayout from '../components/BaseLayout.vue';
+import { QrCode, Camera, MapPin } from 'lucide-vue-next';
+import BaseButton from '../components/BaseButton.vue';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+
+const router = useRouter();
+const isScanning = ref(false);
+
+const quickAccessLocations = ref([
+    { id: 1, name: 'Banheiro 2º Andar', itemTypes: 3, openCalls: 1 },
+    { id: 2, name: 'Copa 3º Andar', itemTypes: 3, openCalls: 1 },
+    { id: 3, name: 'Sala de Reunião 101', itemTypes: 3, openCalls: 1 },
+    { id: 4, name: 'Laboratório 07', itemTypes: 3, openCalls: 1 },
+]);
+
+let html5QrcodeScanner = null;
+
+function startScan() {
+    isScanning.value = true;
+    nextTick(() => {
+        const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            rememberLastUsedCamera: true,
+            supportedScanTypes: [0]
+        };
+        html5QrcodeScanner = new Html5QrcodeScanner('qr-reader', config, false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    });
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+    console.log(`Código lido com sucesso: ${decodedText}`, decodedResult);
+    alert(`QR Code escaneado! Conteúdo: ${decodedText}`);
+    stopScanner();
+
+}
+
+function onScanFailure(error) {
+}
+
+function stopScanner() {
+    if (html5QrcodeScanner) {
+        html5QrcodeScanner.clear().then(() => {
+            console.log("Scanner parado com sucesso.");
+            isScanning.value = false;
+            html5QrcodeScanner = null;
+        }).catch(error => {
+            console.error("Falha ao parar o scanner.", error);
+            isScanning.value = false;
+        });
+    }
+}
+
+function cancelScan() {
+    stopScanner();
+}
+
+onBeforeUnmount(() => {
+    if (html5QrcodeScanner) {
+        stopScanner();
+    }
+});
+
+function goToReport(locationId) {
+    alert(`Redirecionando para abrir chamado no local ID: ${locationId}`);
+}
+</script>
+
+<template>
+    <BaseLayout>
+        <div class="flex justify-center">
+            <div class="w-full max-w-lg space-y-5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+
+                <div class="flex items-start gap-4">
+                    <QrCode class="h-10 w-10 text-gray-700" />
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Reportar Problema</h1>
+                        <p class="text-sm text-gray-500">Escaneie o QR Code do local para abrir um chamado.</p>
+                    </div>
+                </div>
+                <hr />
+
+                <div v-if="!isScanning">
+                    <button @click="startScan"
+                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-700 py-3 font-bold text-white transition-colors hover:bg-green-800">
+                        <Camera class="h-6 w-6" />
+                        <span>Escanear QR Code</span>
+                    </button>
+
+                    <div class="space-y-3 pt-5">
+                        <h2 class="text-sm font-semibold uppercase text-gray-500">Acesso Rápido</h2>
+
+                        <div v-for="location in quickAccessLocations" :key="location.id"
+                            @click="goToReport(location.id)"
+                            class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
+                            <MapPin class="h-6 w-6 text-gray-600" />
+                            <div>
+                                <p class="font-bold text-gray-800">{{ location.name }}</p>
+                                <p class="text-xs text-gray-500">
+                                    {{ location.itemTypes }} tipos de itens - {{ location.openCalls }} chamado aberto
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else class="flex flex-col items-center gap-6 text-center">
+                    <button
+                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-800 py-3 font-bold text-white"
+                        disabled>
+                        <Camera class="h-6 w-6 animate-pulse" />
+                        <span>Aponte para o QR Code...</span>
+                    </button>
+
+                    <div id="qr-reader" class="w-full"></div>
+
+                    <BaseButton @click="cancelScan" variant="outlined">
+                        Cancelar
+                    </BaseButton>
+                </div>
+            </div>
+        </div>
+    </BaseLayout>
+</template>
+
+<style>
+#qr-reader {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#qr-reader video {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#qr-reader__dashboard_section_swaplink {
+    color: #1C5E27 !important;
+}
+</style

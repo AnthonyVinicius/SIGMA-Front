@@ -7,3 +7,5 @@ O SIGMAΣ (Sistema Integrado de Gestão de Manutenção e Ambientes) tem como ob
 Atualmente, esse processo ocorre de forma informal e descentralizada, o que pode gerar atrasos, perda de informações e dificuldades no acompanhamento da resolução. A proposta deste sistema é oferecer uma plataforma web integrada, onde alunos e servidores poderão registrar ocorrências de forma prática e rápida.
 
 Para facilitar ainda mais, cada ambiente do campus (salas de aula, laboratórios, biblioteca, banheiros e áreas de convivência) terá um QR Code exclusivo. Ao escaneá-lo, o usuário será direcionado diretamente para a abertura de um chamado referente àquele espaço, garantindo agilidade, rastreabilidade e transparência no processo de manutenção.
+
+[FIGMA](https://www.figma.com/design/wBCNSpbFPcfkiS3xIDNO1H/Projeto-Sigma?node-id=0-1&p=f&t=J2TajnG3v3S6oCOL-0)

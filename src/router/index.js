@@ -3,6 +3,7 @@ import UserDashboard from "../views/UserDashboard.vue";
 import TestComponents from "../views/TestComponents.vue";
 import AdminDashboard from '../views/AdminDashboard.vue'
 import TelaLogin from "../components/TelaLogin.vue";
+import ReportProblem from "../views/ReportProblem.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -30,7 +31,12 @@ const router = createRouter({
       path : "/login",
       name : "login",
       component : TelaLogin,
-      
+    
+    },
+    {
+      path: "/reportar",
+      name: "reportar-problema",
+      component: ReportProblem,
     }
   ],
 });
