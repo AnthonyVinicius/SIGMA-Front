@@ -1,11 +1,5 @@
 import {
   Hand,
-  CircleAlert,
-  Clock,
-  CircleCheck,
-  TextAlignJustify,
-  MapPin,
-  Cog,
   Lightbulb,
   DoorClosed,
   Thermometer,
@@ -13,31 +7,8 @@ import {
   Wifi,
 } from "lucide-vue-next";
 
-export const statusList = [
-  {
-    id: 1,
-    icon: CircleAlert,
-    title: "Chamado em Aberto",
-    count: 8,
-    color: "text-red-500",
-  },
-  {
-    id: 2,
-    icon: Clock,
-    title: "Chamado em Andamento",
-    count: 3,
-    color: "text-yellow-500",
-  },
-  {
-    id: 3,
-    icon: CircleCheck,
-    title: "Chamado Finalizado",
-    count: 14,
-    color: "text-green-500",
-  },
-];
-
-export const recentCalls = [
+// ✅ FONTE ÚNICA DE DADOS
+export const calls = [
   {
     id: 1,
     icon: Hand,
@@ -45,6 +16,7 @@ export const recentCalls = [
     description: "Não liga",
     location: "Banheiro 2º Andar",
     priority: "Normal",
+    status: "Aberto",
     counter: 15,
     date: "21/08/2025",
   },
@@ -55,6 +27,7 @@ export const recentCalls = [
     description: "Lâmpada do corredor não acende",
     location: "Corredor principal - 1º Andar",
     priority: "Alta",
+    status: "Aberto",
     counter: 8,
     date: "22/08/2025",
   },
@@ -65,6 +38,7 @@ export const recentCalls = [
     description: "A porta da sala de servidores não tranca",
     location: "Sala de Servidores - Térreo",
     priority: "Crítica",
+    status: "Em Andamento",
     counter: 3,
     date: "20/08/2025",
   },
@@ -75,6 +49,7 @@ export const recentCalls = [
     description: "Pingando água próxima à entrada",
     location: "Recepção",
     priority: "Alta",
+    status: "Aberto",
     counter: 12,
     date: "23/08/2025",
   },
@@ -85,6 +60,7 @@ export const recentCalls = [
     description: "Erro de papel atolado constante",
     location: "Setor Administrativo",
     priority: "Normal",
+    status: "Concluído",
     counter: 9,
     date: "24/08/2025",
   },
@@ -95,61 +71,8 @@ export const recentCalls = [
     description: "Sinal inexistente no laboratório",
     location: "Laboratório de Informática",
     priority: "Alta",
+    status: "Em Andamento",
     counter: 6,
     date: "25/08/2025",
   },
 ];
-
-export const adminActions = [
-  {
-    icon: MapPin,
-    title: "Gerenciar Locais",
-    description: "Adicionar novos locais e gerar QR Code",
-    color: "text-green-800",
-  },
-  {
-    icon: Cog,
-    title: "Tipos de Itens",
-    description: "Gerenciar e cadastrar tipos de itens",
-    color: "text-green-800",
-  },
-  {
-    icon: TextAlignJustify,
-    title: "Todos os Chamados",
-    description: "Visualizar e gerenciar chamados",
-    color: "text-green-800",
-  },
-];
-
-export const chamadosPorPrioridade = {
-  labels: ["Alta", "Média", "Baixa"],
-  datasets: [
-    {
-      label: "Chamados",
-      data: [8, 12, 5],
-      backgroundColor: ["#ef4444", "#f59e0b", "#10b981"],
-    },
-  ],
-};
-
-export const chamadosPorStatus = {
-  labels: ["Aberto", "Em Andamento", "Concluído"],
-  datasets: [
-    {
-      label: "Chamados",
-      data: [10, 7, 8],
-      backgroundColor: ["#3b82f6", "#f97316", "#10b981"],
-    },
-  ],
-};
-
-export const chamadosPorLocal = {
-  labels: ["Lab. de Informática", "Biblioteca", "Banheiros"],
-  datasets: [
-    {
-      label: "Chamados",
-      data: [6, 4, 15],
-      backgroundColor: ["#8b5cf6", "#ec4899", "#22d3ee"],
-    },
-  ],
-};
