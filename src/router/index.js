@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import UserDashboard from "../views/UserDashboard.vue";
 import TestComponents from "../views/TestComponents.vue";
-import AdminDashboard from "../views/AdminDashboard.vue";
+import AdminDashboard from '../views/AdminDashboard.vue'
+import TelaLogin from "../components/TelaLogin.vue";
 import ReportProblem from "../views/ReportProblem.vue";
 
 const router = createRouter({
@@ -27,10 +28,16 @@ const router = createRouter({
       component: AdminDashboard,
     },
     {
+      path : "/login",
+      name : "login",
+      component : TelaLogin,
+    
+    },
+    {
       path: "/reportar",
       name: "reportar-problema",
       component: ReportProblem,
-    },
+    }
   ],
 });
 
