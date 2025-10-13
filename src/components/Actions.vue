@@ -1,9 +1,6 @@
-<script setup>
-</script>
-
 <template>
-
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full max-w-sm text-center">
+    <div
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full text-center transition-all hover:shadow-md">
         <div class="flex justify-center mb-3">
             <slot name="logo" />
         </div>
@@ -16,5 +13,4 @@
             <slot name="description" />
         </p>
     </div>
-
 </template>
