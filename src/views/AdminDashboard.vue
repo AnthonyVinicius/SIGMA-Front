@@ -42,27 +42,30 @@ const recentCalls = computed(() =>
       new Date(a.date.split('/').reverse().join('-'))
   ).slice(0, 5)
 )
-
 const actions = [
   {
     icon: MapPin,
     title: "Gerenciar Locais",
     description: "Adicionar novos locais e gerar QR Code",
     color: "text-green-800",
+    to: "/manageLocals", 
   },
   {
     icon: Cog,
     title: "Tipos de Itens",
     description: "Gerenciar e cadastrar tipos de itens",
     color: "text-green-800",
+    to: "/itensType",
   },
   {
     icon: TextAlignJustify,
     title: "Todos os Chamados",
     description: "Visualizar e gerenciar chamados",
     color: "text-green-800",
+    to: "/allReports",
   },
 ]
+
 </script>
 
 <template>
@@ -90,27 +93,28 @@ const actions = [
         </div>
       </section>
 
-      <section>
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
-          <Actions v-for="action in actions" :key="action.title">
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <RouterLink v-for="action in actions" :key="action.title" :to="action.to">
+          <Actions>
             <template #logo>
               <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
             </template>
             <template #title>{{ action.title }}</template>
             <template #description>{{ action.description }}</template>
           </Actions>
-        </div>
-      </section>
+        </RouterLink>
+      </div>
 
       <section class="bg-white p-5 rounded-md shadow-sm">
         <div class="flex items-center mb-3">
           <h2 class="text-lg font-semibold">Últimos Chamados Assumidos</h2>
-          <RouterLink to="/" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
+          <RouterLink to="/allReports" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
         </div>
 
         <div class="flex flex-col gap-3">
           <div class="flex flex-col gap-3">
-            <ItensTabelaChamado v-for="(chamado, i) in calls" :key="i">
+            <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i">
               <template #icon>
                 <component :is="chamado.icon" class="w-8 h-8 text-green-700" />
               </template>
