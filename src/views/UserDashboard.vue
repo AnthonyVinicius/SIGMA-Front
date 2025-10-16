@@ -27,6 +27,7 @@ const actions = [
         title: 'Escanear QR Code',
         description: 'Escaneie o QR Code de um local para reportar um problema',
         color: 'text-green-800',
+        to: "/reportar",
     },
     {
         id: 2,
@@ -34,6 +35,7 @@ const actions = [
         title: 'Meus Chamados',
         description: 'Visualize o status dos seus chamados abertos',
         color: 'text-green-800',
+        to: "/allReports"
     },
 ]
 </script>
@@ -73,25 +75,26 @@ const actions = [
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <Actions v-for="action in actions" :key="action.id"
-                    class="flex flex-col items-center text-center bg-white rounded-md shadow-sm p-6">
-                    <template #logo>
-                        <component :is="action.icon" :class="`${action.color} w-10 h-10 mb-3`" />
-                    </template>
-                    <template #title>{{ action.title }}</template>
-                    <template #description>{{ action.description }}</template>
-                </Actions>
+                <RouterLink v-for="action in actions" :key="action.title" :to="action.to">
+                    <Actions>
+                        <template #logo>
+                            <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
+                        </template>
+                        <template #title>{{ action.title }}</template>
+                        <template #description>{{ action.description }}</template>
+                    </Actions>
+                </RouterLink>
             </div>
 
             <div class="bg-white p-5 rounded-md shadow-sm">
                 <div class="flex items-center mb-3">
                     <h2 class="text-lg font-semibold">Meus Chamados Recentes</h2>
-                    <RouterLink to="/" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
+                    <RouterLink to="/allReports" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
                 </div>
 
                 <div class="flex flex-col gap-3">
                     <div class="flex flex-col gap-3">
-                        <ItensTabelaChamado v-for="(chamado, i) in calls" :key="i">
+                        <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i">
                             <template #icon>
                                 <component :is="chamado.icon" class="w-8 h-8 text-green-700" />
                             </template>

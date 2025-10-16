@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router";
 import UserDashboard from "../views/UserDashboard.vue";
-import TestComponents from "../views/TestComponents.vue";
 import AdminDashboard from '../views/AdminDashboard.vue'
-import TelaLogin from "../components/TelaLogin.vue";
+import LoginView from "../views/LoginView.vue";
 import ReportProblem from "../views/ReportProblem.vue";
+import ManageLocalView from "../views/ManageLocalView.vue"
+import ItensTypeView from "../views/ItensTypeView.vue";
+import AllReportsView from "../views/AllReportsView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: "/",
-      redirect: "/dashboard",
+      redirect: "/reportar",
     },
     {
       path: "/dashboard",
@@ -18,26 +20,35 @@ const router = createRouter({
       component: UserDashboard,
     },
     {
-      path: "/test",
-      name: "TestComponent",
-      component: TestComponents,
-    },
-    {
       path: "/adminDashboard",
       name: "AdminDashboard",
       component: AdminDashboard,
     },
     {
-      path : "/login",
-      name : "login",
-      component : TelaLogin,
-    
+      path: "/login",
+      name: "login",
+      component: LoginView,
     },
     {
       path: "/reportar",
       name: "reportar-problema",
       component: ReportProblem,
-    }
+    },
+    {
+      path: "/manageLocals",
+      name: "manage-Locals",
+      component: ManageLocalView,
+    },
+    {
+      path: "/itensType",
+      name: "itens-Type",
+      component: ItensTypeView,
+    },
+    {
+      path: "/AllReports",
+      name: "all-Reports",
+      component: AllReportsView,
+    },
   ],
 });
 

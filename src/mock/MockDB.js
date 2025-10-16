@@ -7,7 +7,80 @@ import {
   Wifi,
 } from "lucide-vue-next";
 
-// ✅ FONTE ÚNICA DE DADOS
+export const locais = [
+  {
+    nome: "Banheiro 2º Andar",
+    id: "nbf91738v49yb3q8",
+    itens: [
+      "Vaso sanitário",
+      "Papel higiênico",
+      "Saboneteira",
+      "Secador de mãos",
+    ],
+  },
+  {
+    nome: "Laboratório de Redes",
+    id: "abc123xyz456",
+    itens: ["Switch", "Computador", "Mesa", "Cadeira giratória"],
+  },
+  {
+    nome: "Sala dos Professores",
+    id: "xyz987abc654",
+    itens: [
+      "Cadeiras",
+      "Mesa de reuniões",
+      "Quadro branco",
+      "Ventilador de teto",
+    ],
+  },
+  {
+    nome: "Biblioteca Central",
+    id: "lib237abc991",
+    itens: ["Estantes", "Computadores", "Cadeiras", "Mesas de leitura"],
+  },
+  {
+    nome: "Setor Administrativo",
+    id: "adm552klm732",
+    itens: ["Impressora", "Computador", "Telefone", "Cadeiras"],
+  },
+  {
+    nome: "Refeitório Principal",
+    id: "ref101hgb221",
+    itens: ["Mesas", "Cadeiras", "Geladeira", "Bebedouro"],
+  },
+  {
+    nome: "Laboratório de Química",
+    id: "labq332kdd879",
+    itens: [
+      "Bancada",
+      "Pia de lavagem",
+      "Armário de reagentes",
+      "Capela de exaustão",
+    ],
+  },
+  {
+    nome: "Recepção",
+    id: "rec445plq209",
+    itens: [
+      "Computador",
+      "Telefone",
+      "Cadeira de espera",
+      "Impressora térmica",
+    ],
+  },
+  {
+    nome: "Auditório Principal",
+    id: "aud654klp992",
+    itens: ["Projetor", "Cadeiras fixas", "Microfone", "Caixas de som"],
+  },
+  {
+    nome: "Laboratório de Informática",
+    id: "labinfo9083xz",
+    itens: ["Computadores", "Switch", "Roteador Wi-Fi", "Quadro branco"],
+  },
+];
+
+
 export const calls = [
   {
     id: 1,
