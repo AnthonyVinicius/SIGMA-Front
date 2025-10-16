@@ -6,7 +6,7 @@
       <div class="text-center">
         <div class="inline-block p-3 mb-4 bg-white bg-opacity-10 rounded-full">
           <img 
-            src="/src/img/biometria.png" 
+            src="/src/img/favicon.ico" 
             alt="Ícone de biometria" 
             class="w-8 h-8"
           >
