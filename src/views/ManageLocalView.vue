@@ -7,6 +7,17 @@
                     <p class="text-gray-600">Adicione novos locais e gere QR Codes</p>
                 </div>
 
+                
+                <div class="flex flex-col gap-4 md:flex-row md:items-center justify-start">
+                    <select v-model="selectedCategory" id="filter-category"
+                        class="block w-full md:w-64 px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500">
+                        <option value="">Todas as Categorias</option>
+                        <option v-for="category in uniqueCategories" :key="category" :value="category">
+                            {{ category }}
+                        </option>
+                    </select>
+                </div>
+
 
                 <button
                     class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm ms-auto">
@@ -36,15 +47,37 @@
                 </LocalCard>
             </section>
 
+            <p v-if="filteredLocais.length === 0" class="text-center text-gray-500 mt-10">
+                Nenhum local encontrado nesta categoria.
+            </p>
+
         </div>
     </BaseLayout>
 </template>
 
 <script setup>
+import { ref, computed } from 'vue';
 import BaseLayout from '../components/BaseLayout.vue';
 import LocalCard from '../components/LocalCard.vue'
 import { locais } from '../mock/MockDB';
 
+const selectedCategory = ref('');
+
+const uniqueCategories = computed(() => {
+    const allCategories = listaLocais.value.flatMap(local => local.category || []); 
+    return [...new Set(allCategories)].sort();
+});
+
+const filteredLocais = computed(() => {
+    if (!selectedCategory.value) {
+        return listaLocais.value;
+    }
+    
+    return listaLocais.value.filter(local => {
+        const categories = Array.isArray(local.category) ? local.category : [];
+        return categories.includes(selectedCategory.value);
+    });
+});
 
 function handleDelete() {
     console.log('Excluir local')
