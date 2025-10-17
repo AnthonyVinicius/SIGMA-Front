@@ -61,7 +61,7 @@
 
 <script setup>
 import { shallowRef } from 'vue';
-import { ClipboardList, ShieldUser, LogOut, QrCode, MapPin, Cog, TextAlignJustify } from 'lucide-vue-next';
+import { ClipboardList, ShieldUser, LogOut, QrCode, MapPin, Cog, TextAlignJustify, Package } from 'lucide-vue-next';
 
 
 const userAdm = true
@@ -83,6 +83,7 @@ const menuItemsAdmin = shallowRef([
     { to: "/adminDashboard", label: "Dashboard", icon: ShieldUser },
     { to: "/allReports", label: "Chamados", icon: TextAlignJustify },
     { to: "/manageLocals", label: "Gerenciar Locais", icon: MapPin },
+    { to: "/itensType", label: "Gerenciar Itens", icon: Package },
     //{ to: "/login", label: "Sair", icon: LogOut },
 ]);
 

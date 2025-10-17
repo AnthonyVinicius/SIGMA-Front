@@ -1,0 +1,62 @@
+[
+  {
+    "id": "nbf91738v49yb3q8",
+    "nome": "Banheiro 2º Andar",
+    "itensIds": ["item001", "item002", "item003", "item004"],
+    "qrCode": null
+  },
+  {
+    "id": "abc123xyz456",
+    "nome": "Laboratório de Redes",
+    "itensIds": ["item005", "item006", "item007", "item008"],
+    "qrCode": null
+  },
+  {
+    "id": "xyz987abc654",
+    "nome": "Sala dos Professores",
+    "itensIds": ["item009", "item010", "item011", "item012"],
+    "qrCode": null
+  },
+  {
+    "id": "lib237abc991",
+    "nome": "Biblioteca Central",
+    "itensIds": ["item013", "item014", "item015", "item016"],
+    "qrCode": null
+  },
+  {
+    "id": "adm552klm732",
+    "nome": "Setor Administrativo",
+    "itensIds": ["item017", "item018", "item019", "item020"],
+    "qrCode": null
+  },
+  {
+    "id": "ref101hgb221",
+    "nome": "Refeitório Principal",
+    "itensIds": ["item021", "item022", "item023", "item024"],
+    "qrCode": null
+  },
+  {
+    "id": "labq332kdd879",
+    "nome": "Laboratório de Química",
+    "itensIds": ["item025", "item026", "item027", "item028"],
+    "qrCode": null
+  },
+  {
+    "id": "rec445plq209",
+    "nome": "Recepção",
+    "itensIds": ["item029", "item030", "item031", "item032"],
+    "qrCode": null
+  },
+  {
+    "id": "aud654klp992",
+    "nome": "Auditório Principal",
+    "itensIds": ["item033", "item034", "item035", "item036"],
+    "qrCode": null
+  },
+  {
+    "id": "labinfo9083xz",
+    "nome": "Laboratório de Informática",
+    "itensIds": ["item037", "item038", "item039", "item040"],
+    "qrCode": null
+  }
+]
