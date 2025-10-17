@@ -26,7 +26,14 @@
 
         <div class="mt-10 flex flex-1 flex-col justify-between">
             <nav :class="['-mx-3 space-y-3', isExpanded ? '' : 'flex flex-col items-center']">
-                <router-link v-for="item in menuItems" :key="item.label" :to="item.to"
+                <router-link v-if=userAdm v-for="item in menuItemsUser" :key="item.label" :to="item.to"
+                    :class="['flex transform items-center rounded-lg px-3 py-3 text-gray-600 transition-colors duration-300 hover:bg-[#1C5E27] hover:text-white', isExpanded ? '' : 'justify-center']">
+                    <component :is="item.icon" class="h-6 w-6" />
+                    <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">{{ item.label
+                        }}</span>
+                </router-link>
+
+                <router-link v-if=userAdm v-for="item in menuItemsAdmin" :key="item.label" :to="item.to"
                     :class="['flex transform items-center rounded-lg px-3 py-3 text-gray-600 transition-colors duration-300 hover:bg-[#1C5E27] hover:text-white', isExpanded ? '' : 'justify-center']">
                     <component :is="item.icon" class="h-6 w-6" />
                     <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">{{ item.label
@@ -42,7 +49,8 @@
                     <div v-show="isExpanded" class="flex flex-grow items-center justify-between">
                         <div class="transition-opacity duration-200">
                             <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">{{ usuario.nome }}</h1>
-                            <p class="text-sm text-gray-500">{{ usuario.cargo }}</p>
+                            <p v-if=userAdm class="text-sm text-gray-500">Administrador</p>
+                            <p v-if=!userAdm class="text-sm text-gray-500"> Aluno</p>
                         </div>
                     </div>
                 </div>
@@ -55,6 +63,9 @@
 import { shallowRef } from 'vue';
 import { ClipboardList, ShieldUser, LogOut, QrCode } from 'lucide-vue-next';
 
+
+const userAdm = true
+
 defineProps({
     isExpanded: {
         type: Boolean,
@@ -62,16 +73,19 @@ defineProps({
     }
 });
 
-const menuItems = shallowRef([
+const menuItemsUser = shallowRef([
     { to: "/reportar", label: 'Reportar', icon: QrCode },
-    { to: "/dashboard", label: "Dashboard", icon: ClipboardList },
-    { to: "/adminDashboard", label: "AdminDashboard", icon: ShieldUser },
+    { to: "/userDashboard", label: "Dashboard", icon: ClipboardList },
     { to: "/login", label: "Sair", icon: LogOut },
+]);
+const menuItemsAdmin = shallowRef([
+   // { to: "/reportar", label: 'Reportar', icon: QrCode },
+    { to: "/adminDashboard", label: "Dashboard", icon: ShieldUser },
+    //{ to: "/login", label: "Sair", icon: LogOut },
 ]);
 
 const usuario = {
     nome: 'Ericlecio',
-    cargo: 'Administrador',
     avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQGO0jFnAufS3g/profile-displayphoto-shrink_200_200/B4DZdbRf0MGkAY-/0/1749583004054?e=2147483647&v=beta&t=2Znm62Yvxyf0vJ8VN2DSr3CpTg0QEtYDtvb-vfjQ3HE',
 };
 </script>

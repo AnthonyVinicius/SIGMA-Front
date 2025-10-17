@@ -1,20 +1,13 @@
 <script setup>
 import { ref, onBeforeUnmount, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-import BaseLayout from '../components/BaseLayout.vue';
 import { QrCode, Camera, MapPin } from 'lucide-vue-next';
 import BaseButton from '../components/BaseButton.vue';
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import { locais } from '../mock/MockDB'
 
 const router = useRouter();
 const isScanning = ref(false);
-
-const quickAccessLocations = ref([
-    { id: 1, name: 'Banheiro 2º Andar', itemTypes: 3, openCalls: 1 },
-    { id: 2, name: 'Copa 3º Andar', itemTypes: 3, openCalls: 1 },
-    { id: 3, name: 'Sala de Reunião 101', itemTypes: 3, openCalls: 1 },
-    { id: 4, name: 'Laboratório 07', itemTypes: 3, openCalls: 1 },
-]);
 
 let html5QrcodeScanner = null;
 
@@ -94,15 +87,11 @@ function goToReport(locationId) {
                     <div class="space-y-3 pt-5">
                         <h2 class="text-sm font-semibold uppercase text-gray-500">Acesso Rápido</h2>
 
-                        <div v-for="location in quickAccessLocations" :key="location.id"
-                            @click="goToReport(location.id)"
+                        <div v-for="(local, i) in locais.slice(0, 5)"
                             class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
                             <MapPin class="h-6 w-6 text-gray-600" />
                             <div>
-                                <p class="font-bold text-gray-800">{{ location.name }}</p>
-                                <p class="text-xs text-gray-500">
-                                    {{ location.itemTypes }} tipos de itens - {{ location.openCalls }} chamado aberto
-                                </p>
+                                <p class="font-bold text-gray-800">{{ local.nome }}</p>
                             </div>
                         </div>
                     </div>
@@ -154,4 +143,4 @@ function goToReport(locationId) {
 #qr-reader__dashboard_section_swaplink {
     color: #1C5E27 !important;
 }
-</style
+</style>

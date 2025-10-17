@@ -81,7 +81,7 @@ function handleLogin() {
   // Aqui você faria a chamada para sua API para validar o login
   // if (loginValido) {
     localStorage.setItem('user-token', 'meu-token-secreto-123');
-    router.push('/dashboard');
+    router.push('/userDashboard');
   // }
 }
 </script>

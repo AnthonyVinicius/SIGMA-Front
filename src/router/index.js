@@ -15,7 +15,7 @@ const router = createRouter({
       redirect: "/reportar",
     },
     {
-      path: "/dashboard",
+      path: "/userDashboard",
       name: "Dashboard",
       component: UserDashboard,
     },
