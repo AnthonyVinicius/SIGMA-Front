@@ -107,17 +107,16 @@ const actions = [
                             <template #date>{{ chamado.date }}</template>
 
                             <template #status>
-                                <span v-if="chamado.status === 'Aberto'"
-                                    class="bg-red-100 text-red-700 px-4 py-2 rounded-md">
-                                    {{ chamado.status }}
-                                </span>
-                                <span v-else-if="chamado.status === 'Em Andamento'"
-                                    class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-md">
-                                    {{ chamado.status }}
-                                </span>
-                                <span v-else class="bg-green-100 text-green-700 px-4 py-2 rounded-md">
-                                    {{ chamado.status }}
-                                </span>
+                            <span
+                                class="inline-block w-32 text-center px-2 py-1.5 rounded-md font-medium text-sm"
+                                :class="{
+                                'bg-red-100 text-red-700': chamado.status === 'Aberto',
+                                'bg-yellow-100 text-yellow-700': chamado.status === 'Em Andamento',
+                                'bg-green-100 text-green-700': chamado.status === 'Concluído'
+                                }"
+                            >
+                                {{ chamado.status }}
+                            </span>
                             </template>
                         </ItensTabelaChamado>
                     </div>
