@@ -11,6 +11,7 @@ export const locais = [
   {
     nome: "Banheiro 2º Andar",
     id: "nbf91738v49yb3q8",
+    category: ["Banheiros", "Segundo Andar"],
     itens: [
       "Vaso sanitário",
       "Papel higiênico",
@@ -21,11 +22,13 @@ export const locais = [
   {
     nome: "Laboratório de Redes",
     id: "abc123xyz456",
+    category: ["Laboratórios", "Térreo", "Bloco 3"],
     itens: ["Switch", "Computador", "Mesa", "Cadeira giratória"],
   },
   {
     nome: "Sala dos Professores",
     id: "xyz987abc654",
+    category: ["Salas e Escritórios", "Térreo", "Bloco 2"],
     itens: [
       "Cadeiras",
       "Mesa de reuniões",
@@ -36,21 +39,25 @@ export const locais = [
   {
     nome: "Biblioteca Central",
     id: "lib237abc991",
+    category: ["Áreas Comuns", "Bloco 1"],
     itens: ["Estantes", "Computadores", "Cadeiras", "Mesas de leitura"],
   },
   {
     nome: "Setor Administrativo",
     id: "adm552klm732",
+    category: ["Administração", "Térreo", "Bloco 2"],
     itens: ["Impressora", "Computador", "Telefone", "Cadeiras"],
   },
   {
     nome: "Refeitório Principal",
     id: "ref101hgb221",
+    category: ["Áreas Comuns", "Térreo", "Bloco 3"],
     itens: ["Mesas", "Cadeiras", "Geladeira", "Bebedouro"],
   },
   {
     nome: "Laboratório de Química",
     id: "labq332kdd879",
+    category: ["Laboratórios", "Segundo Andar", "Bloco 3"],
     itens: [
       "Bancada",
       "Pia de lavagem",
@@ -61,6 +68,7 @@ export const locais = [
   {
     nome: "Recepção",
     id: "rec445plq209",
+    category: ["Administração", "Térreo", "Bloco 1"],
     itens: [
       "Computador",
       "Telefone",
@@ -71,11 +79,13 @@ export const locais = [
   {
     nome: "Auditório Principal",
     id: "aud654klp992",
+    category: ["Áreas Comuns", "Térreo", "Bloco 2"],
     itens: ["Projetor", "Cadeiras fixas", "Microfone", "Caixas de som"],
   },
   {
     nome: "Laboratório de Informática",
     id: "labinfo9083xz",
+    category: ["Laboratórios", "Térreo", "Bloco 3"],
     itens: ["Computadores", "Switch", "Roteador Wi-Fi", "Quadro branco"],
   },
 ];
