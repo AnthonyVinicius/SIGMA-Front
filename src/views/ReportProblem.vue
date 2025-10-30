@@ -1,16 +1,24 @@
 <script setup>
-import { ref, onBeforeUnmount, nextTick } from 'vue';
+import { ref, onBeforeUnmount, nextTick, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { QrCode, Camera, MapPin } from 'lucide-vue-next';
 import BaseButton from '../components/BaseButton.vue';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { locais } from '../mock/MockDB'
+import EnvironmentalDAO  from '../services/EnviromentalDAO';
 
 const router = useRouter();
 const isScanning = ref(false);
 
 let html5QrcodeScanner = null;
+const locais = ref([]);
 
+async function loadEnviromental() {
+    try{  
+        locais.value = await EnvironmentalDAO.getAll()
+    }catch(e){
+
+    }
+}
 function startScan() {
     isScanning.value = true;
     nextTick(() => {
@@ -51,6 +59,9 @@ function stopScanner() {
 function cancelScan() {
     stopScanner();
 }
+onMounted( async() =>{
+    await loadEnviromental()
+});
 
 onBeforeUnmount(() => {
     if (html5QrcodeScanner) {
@@ -91,7 +102,7 @@ function goToReport(locationId) {
                             class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
                             <MapPin class="h-6 w-6 text-gray-600" />
                             <div>
-                                <p class="font-bold text-gray-800">{{ local.nome }}</p>
+                                <p class="font-bold text-gray-800">{{ local.name }}</p>
                             </div>
                         </div>
                     </div>

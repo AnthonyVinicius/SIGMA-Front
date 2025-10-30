@@ -4,7 +4,7 @@ import AdminDashboard from '../views/AdminDashboard.vue'
 import LoginView from "../views/LoginView.vue";
 import ReportProblem from "../views/ReportProblem.vue";
 import ManageLocalView from "../views/ManageLocalView.vue"
-import ItensTypeView from "../views/ItensTypeView.vue";
+import ItensTypeView from "../views/ItensManager.vue";
 import AllReportsView from "../views/AllReportsView.vue";
 
 const router = createRouter({
@@ -40,9 +40,9 @@ const router = createRouter({
       component: ManageLocalView,
     },
     {
-      path: "/itensType",
-      name: "itens-Type",
-      component: ItensTypeView,
+      path: "/locais/:id/itens",
+      name: "ItensPorLocal",
+      component: () => import("../views/ItensManager.vue"),
     },
     {
       path: "/AllReports",

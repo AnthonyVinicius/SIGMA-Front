@@ -43,8 +43,6 @@
 
             <div class="mt-6 border-t pt-4">
                 <div :class="['flex w-full items-center', isExpanded ? 'gap-x-3' : 'justify-center']">
-                    <img class="h-12 w-12 rounded-full object-cover flex-shrink-0" :src="usuario.avatarUrl"
-                        :alt="usuario.nome" />
 
                     <div v-show="isExpanded" class="flex flex-grow items-center justify-between">
                         <div class="transition-opacity duration-200">
@@ -83,13 +81,11 @@ const menuItemsAdmin = shallowRef([
     { to: "/adminDashboard", label: "Dashboard", icon: ShieldUser },
     { to: "/allReports", label: "Chamados", icon: TextAlignJustify },
     { to: "/manageLocals", label: "Gerenciar Locais", icon: MapPin },
-    { to: "/itensType", label: "Gerenciar Itens", icon: Package },
     //{ to: "/login", label: "Sair", icon: LogOut },
 ]);
 
 const usuario = {
     nome: 'Ericlecio',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQGO0jFnAufS3g/profile-displayphoto-shrink_200_200/B4DZdbRf0MGkAY-/0/1749583004054?e=2147483647&v=beta&t=2Znm62Yvxyf0vJ8VN2DSr3CpTg0QEtYDtvb-vfjQ3HE',
 };
 </script>
 
