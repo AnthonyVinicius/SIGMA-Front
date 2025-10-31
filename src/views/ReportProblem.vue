@@ -1,126 +1,111 @@
 <script setup>
-import { ref, onBeforeUnmount, nextTick, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { QrCode, Camera, MapPin } from "lucide-vue-next";
 import BaseButton from "../components/BaseButton.vue";
-import { Html5QrcodeScanner } from "html5-qrcode";
-import EnviromentalDAO from "../services/EnviromentalDAO";
-import TicketsDAO from "../services/TicketsDAO";
+import { useQrScanner } from "../composables/useQrScanner";
+import EnvironmentService from "../services/EnviromentalDAO";
+import TicketsService from "../services/TicketsDAO";
 
-const router = useRouter();
-const isScanning = ref(false);
+const environments = ref([]);
+const selectedEnvironment = ref(null);
+const components = ref([]);
+
+const ticket = ref({
+    description: "",
+    priority: "LOW",
+    problemType: "HARDWARE",
+    component: null,
+    environment: null,
+    status: "OPEN",
+});
+
 const isReporting = ref(false);
-const selectedLocation = ref("");
-const ticketTitle = ref("");
-const ticketDescription = ref("");
-const ticketPriority = ref("Normal");
+const isSubmitting = ref(false);
 
-let html5QrcodeScanner = null;
-
-const locais = ref([]);
-const ambienteSelecionado = ref(null);
-const itensDoAmbiente = ref([]);
-
-async function loadEnviromental() {
+async function loadEnvironments() {
     try {
-        locais.value = await EnviromentalDAO.getAll();
-    } catch (e) { }
+        environments.value = await EnvironmentService.getAll();
+    } catch {
+        alert("Falha ao carregar ambientes.");
+    }
 }
 
-function startScan() {
-    isScanning.value = true;
-    nextTick(() => {
-        const config = {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            rememberLastUsedCamera: true,
-            supportedScanTypes: [0],
+async function onScanSuccess(decodedText) {
+    await stop();
+    try {
+        const env = await EnvironmentService.getById(decodedText);
+        console.log(env)
+        selectedEnvironment.value = {
+            id: env.id,
+            name: env.name
         };
-        html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", config, false);
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-    });
-}
-
-async function onScanSuccess(decodedText, decodedResult) {
-    try {
-        stopScanner();
-        const ambiente = await EnviromentalDAO.getById(decodedText);
-        ambienteSelecionado.value = ambiente;
-        itensDoAmbiente.value = ambiente.components || [];
-        selectedLocation.value = ambiente.name || decodedText;
+        components.value = env.components || [];
+        ticket.value.environment = env.id;
         isReporting.value = true;
-    } catch (error) {
-        alert("Falha ao buscar o ambiente. QR Code inválido ou ambiente não encontrado.");
+    } catch {
+        alert("Ambiente não encontrado.");
     }
 }
 
-function onScanFailure(error) { }
 
+function onScanFailure() { }
 function stopScanner() {
-    if (html5QrcodeScanner) {
-        html5QrcodeScanner
-            .clear()
-            .then(() => {
-                isScanning.value = false;
-                html5QrcodeScanner = null;
-            })
-            .catch(() => {
-                isScanning.value = false;
-            });
-    }
+    stop();
+    resetForm();
 }
 
-function cancelScan() {
-    stopScanner();
-}
+const { isScanning, start, stop } = useQrScanner(onScanSuccess, onScanFailure);
 
-function selectLocation(locationId, locationName) {
-    selectedLocation.value = locationName;
-    ambienteSelecionado.value = { id: locationId, name: locationName };
+function selectEnvironment(env) {
+    selectedEnvironment.value = env;
+    components.value = env.components || [];
+    ticket.value.environment = env.id;
     isReporting.value = true;
 }
 
 async function submitTicket() {
-    if (!ticketTitle.value || !ticketDescription.value) {
-        alert("Por favor, preencha o título e a descrição do problema.");
+    if (!ticket.value.description) {
+        alert("Por favor, descreva o problema.");
         return;
     }
 
+    isSubmitting.value = true;
     try {
-        const ticket = {
-            title: ticketTitle.value,
-            description: ticketDescription.value,
-            environmentId: ambienteSelecionado.value?.id || null,
-            priority: ticketPriority.value.toUpperCase(),
-            status: "ABERTO",
+        const payload = {
+            description: ticket.value.description,
+            status: "OPEN",
+            priority: ticket.value.priority,
+            problemType: ticket.value.problemType,
+            component: ticket.value.component,
+            environment: ticket.value.environment,
         };
 
-        await TicketsDAO.insert(ticket);
+        await TicketsService.insert(payload);
         alert("Chamado criado com sucesso!");
         resetForm();
-    } catch (error) {
-        console.error("Erro ao criar chamado:", error);
+    } catch {
         alert("Erro ao criar chamado. Tente novamente.");
+    } finally {
+        isSubmitting.value = false;
     }
 }
 
 function resetForm() {
     isReporting.value = false;
-    selectedLocation.value = "";
-    ticketTitle.value = "";
-    ticketDescription.value = "";
-    ticketPriority.value = "Normal";
+    selectedEnvironment.value = null;
+    components.value = [];
+    ticket.value = {
+        description: "",
+        priority: "LOW",
+        problemType: "HARDWARE",
+        component: null,
+        environment: null,
+        status: "OPEN",
+    };
 }
 
-onMounted(async () => {
-    await loadEnviromental();
-});
-
-onBeforeUnmount(() => {
-    if (html5QrcodeScanner) {
-        stopScanner();
-    }
-});
+onMounted(loadEnvironments);
+onBeforeUnmount(stop);
 </script>
 
 <template>
@@ -139,7 +124,7 @@ onBeforeUnmount(() => {
                 <hr />
 
                 <div v-if="!isScanning && !isReporting">
-                    <button @click="startScan"
+                    <button @click="start"
                         class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-700 py-3 font-bold text-white transition-colors hover:bg-green-800">
                         <Camera class="h-6 w-6" />
                         <span>Escanear QR Code</span>
@@ -150,12 +135,12 @@ onBeforeUnmount(() => {
                             Acesso Rápido
                         </h2>
 
-                        <div v-for="(local, i) in locais.slice(0, 5)" :key="local.id || i"
-                            @click="selectLocation(local.id, local.name)"
+                        <div v-for="(env, i) in environments.slice(0, 5)" :key="env.id || i"
+                            @click="selectEnvironment(env)"
                             class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
                             <MapPin class="h-6 w-6 text-gray-600" />
                             <div>
-                                <p class="font-bold text-gray-800">{{ local.name }}</p>
+                                <p class="font-bold text-gray-800">{{ env.name }}</p>
                             </div>
                         </div>
                     </div>
@@ -171,31 +156,55 @@ onBeforeUnmount(() => {
 
                     <div id="qr-reader" class="w-full"></div>
 
-                    <BaseButton @click="cancelScan" variant="outlined">Cancelar</BaseButton>
+                    <button @click="stopScanner"
+                        class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm">
+                        Cancelar
+                    </button>
                 </div>
 
                 <div v-else-if="isReporting" class="flex flex-col items-center gap-6 text-center">
                     <h2 class="text-xl font-bold text-gray-800">Reportar Problema</h2>
-                    <p class="text-sm text-gray-500">Local selecionado: {{ selectedLocation }}</p>
+                    <p class="text-sm text-gray-500">
+                        Local selecionado: {{ selectedEnvironment?.name }}
+                    </p>
 
                     <div class="w-full space-y-4">
-                        <input v-model="ticketTitle" type="text" placeholder="Título do problema"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-
-                        <textarea v-model="ticketDescription" placeholder="Descrição do problema" rows="4"
+                        <textarea v-model="ticket.description" placeholder="Descreva o problema" rows="4"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
 
-                        <select v-model="ticketPriority"
+                        <select v-model="ticket.priority"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="Normal">Normal</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Crítica">Crítica</option>
+                            <option value="LOW">Baixa</option>
+                            <option value="MEDIUM">Média</option>
+                            <option value="HIGH">Alta</option>
+                        </select>
+
+                        <select v-model="ticket.problemType"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="HARDWARE">Hardware</option>
+                            <option value="SOFTWARE">Software</option>
+                            <option value="NETWORK">Rede</option>
+                            <option value="OTHER">Outro</option>
+                        </select>
+
+                        <select v-if="components.length > 0" v-model="ticket.component"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option disabled value="">Selecione o componente</option>
+                            <option v-for="comp in components" :key="comp.id" :value="comp.id">
+                                {{ comp.name }}
+                            </option>
                         </select>
                     </div>
 
                     <div class="flex gap-4">
-                        <BaseButton @click="submitTicket" variant="primary">Enviar Chamado</BaseButton>
-                        <BaseButton @click="resetForm" variant="outlined">Cancelar</BaseButton>
+                        <button @click="submitTicket" :disabled="isSubmitting"
+                            class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm">
+                            Enviar Chamado
+                        </button>
+                        <button @click="resetForm"
+                            class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm">
+                            Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
