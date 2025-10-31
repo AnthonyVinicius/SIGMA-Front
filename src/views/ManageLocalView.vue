@@ -57,7 +57,7 @@
             </p>
         </div>
 
-        <ModalLocal :isOpen="isModalOpen" :localData="selectedLocal" :isEdit="isEditMode" :itens="itens"
+        <ModalEnviromental :isOpen="isModalOpen" :localData="selectedLocal" :isEdit="isEditMode" :itens="itens"
             @close="closeModal" @submit="handleSubmit" />
 
         <ModalQRCode :isOpen="isQRModalOpen" :localId="qrLocalId" :localNome="qrLocalNome" @close="closeQRModal" />
@@ -68,7 +68,7 @@
 import { ref, computed, onMounted } from 'vue';
 import BaseLayout from '../components/BaseLayout.vue';
 import LocalCard from '../components/LocalCard.vue';
-import ModalLocal from '../components/ModalEnviromental.vue';
+import ModalEnviromental from '../components/ModalEnviromental.vue';
 import ModalQRCode from '../components/ModalQRCode.vue';
 import EnviromentalDAO from '../services/EnviromentalDAO';
 import { useRouter } from 'vue-router';
@@ -77,6 +77,7 @@ const router = useRouter();
 function openLocalItems(localId) {
     router.push(`/locais/${localId}/itens`);
 }
+
 const locais = ref([]);
 const itens = ref([]);
 const selectedCategory = ref('');
