@@ -135,6 +135,7 @@ async function loadLocalInfo() {
   try {
     const local = await EnvironmentDAO.getById(localId);
     localName.value = local.name;
+    console.log(local)
   } catch (error) {
     console.error("Erro ao carregar local:", error);
   }

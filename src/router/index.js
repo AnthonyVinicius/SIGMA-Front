@@ -4,8 +4,8 @@ import AdminDashboard from '../views/AdminDashboard.vue'
 import LoginView from "../views/LoginView.vue";
 import ReportProblem from "../views/ReportProblem.vue";
 import ManageLocalView from "../views/ManageLocalView.vue"
-import ItensTypeView from "../views/ItensManager.vue";
 import AllReportsView from "../views/AllReportsView.vue";
+import ReportCreateView from "../views/ReportCreateView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -48,6 +48,11 @@ const router = createRouter({
       path: "/AllReports",
       name: "all-Reports",
       component: AllReportsView,
+    },
+    {
+      path: "/report-create",
+      name: "report-create",
+      component: ReportCreateView,
     },
   ],
 });

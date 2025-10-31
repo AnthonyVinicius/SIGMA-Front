@@ -1,24 +1,26 @@
 <script setup>
-import { ref, onBeforeUnmount, nextTick, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { QrCode, Camera, MapPin } from 'lucide-vue-next';
-import BaseButton from '../components/BaseButton.vue';
-import { Html5QrcodeScanner } from 'html5-qrcode';
-import EnvironmentalDAO  from '../services/EnviromentalDAO';
+import { ref, onBeforeUnmount, nextTick, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { QrCode, Camera, MapPin } from "lucide-vue-next";
+import BaseButton from "../components/BaseButton.vue";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import EnviromentalDAO from "../services/EnviromentalDAO";
+import TicketDAO from "../services/TicketsDAO";
 
 const router = useRouter();
 const isScanning = ref(false);
-
 let html5QrcodeScanner = null;
+
 const locais = ref([]);
+const ambienteSelecionado = ref(null);
+const itensDoAmbiente = ref([]);
 
 async function loadEnviromental() {
-    try{  
-        locais.value = await EnvironmentalDAO.getAll()
-    }catch(e){
-
-    }
+    try {
+        locais.value = await EnviromentalDAO.getAll();
+    } catch (e) { }
 }
+
 function startScan() {
     isScanning.value = true;
     nextTick(() => {
@@ -26,41 +28,50 @@ function startScan() {
             fps: 10,
             qrbox: { width: 250, height: 250 },
             rememberLastUsedCamera: true,
-            supportedScanTypes: [0]
+            supportedScanTypes: [0],
         };
-        html5QrcodeScanner = new Html5QrcodeScanner('qr-reader', config, false);
+        html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", config, false);
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     });
 }
 
-function onScanSuccess(decodedText, decodedResult) {
-    console.log(`Código lido com sucesso: ${decodedText}`, decodedResult);
-    alert(`QR Code escaneado! Conteúdo: ${decodedText}`);
-    stopScanner();
-
+async function onScanSuccess(decodedText, decodedResult) {
+    try {
+        stopScanner();
+        const ambiente = await EnviromentalDAO.getById(decodedText);
+        ambienteSelecionado.value = ambiente;
+        itensDoAmbiente.value = ambiente.components || [];
+        router.push({
+            name: "report-create",
+            query: { environmentId: ambiente.id },
+        });
+    } catch (error) {
+        alert("Falha ao buscar o ambiente. QR Code inválido ou ambiente não encontrado.");
+    }
 }
 
-function onScanFailure(error) {
-}
+function onScanFailure(error) { }
 
 function stopScanner() {
     if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear().then(() => {
-            console.log("Scanner parado com sucesso.");
-            isScanning.value = false;
-            html5QrcodeScanner = null;
-        }).catch(error => {
-            console.error("Falha ao parar o scanner.", error);
-            isScanning.value = false;
-        });
+        html5QrcodeScanner
+            .clear()
+            .then(() => {
+                isScanning.value = false;
+                html5QrcodeScanner = null;
+            })
+            .catch(() => {
+                isScanning.value = false;
+            });
     }
 }
 
 function cancelScan() {
     stopScanner();
 }
-onMounted( async() =>{
-    await loadEnviromental()
+
+onMounted(async () => {
+    await loadEnviromental();
 });
 
 onBeforeUnmount(() => {
@@ -70,7 +81,10 @@ onBeforeUnmount(() => {
 });
 
 function goToReport(locationId) {
-    alert(`Redirecionando para abrir chamado no local ID: ${locationId}`);
+    router.push({
+        name: "report-create",
+        query: { environmentId: locationId },
+    });
 }
 </script>
 
@@ -78,7 +92,6 @@ function goToReport(locationId) {
     <div class="min-h-screen flex items-center justify-center bg-gray-100 relative">
         <div class="flex justify-center">
             <div class="w-full max-w-lg space-y-5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-
                 <div class="flex items-start gap-4">
                     <QrCode class="h-10 w-10 text-gray-700" />
                     <div>
@@ -98,7 +111,7 @@ function goToReport(locationId) {
                     <div class="space-y-3 pt-5">
                         <h2 class="text-sm font-semibold uppercase text-gray-500">Acesso Rápido</h2>
 
-                        <div v-for="(local, i) in locais.slice(0, 5)"
+                        <div v-for="(local, i) in locais.slice(0, 5)" :key="local.id || i" @click="goToReport(local.id)"
                             class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
                             <MapPin class="h-6 w-6 text-gray-600" />
                             <div>
@@ -118,9 +131,7 @@ function goToReport(locationId) {
 
                     <div id="qr-reader" class="w-full"></div>
 
-                    <BaseButton @click="cancelScan" variant="outlined">
-                        Cancelar
-                    </BaseButton>
+                    <BaseButton @click="cancelScan" variant="outlined">Cancelar</BaseButton>
                 </div>
             </div>
         </div>
