@@ -87,17 +87,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import TicketsDAO from '../services/TicketsDAO'
 import BaseLayout from '../components/BaseLayout.vue'
 import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
-import { calls as mockCalls } from '../mock/MockDB'
 
-const calls = ref([...mockCalls])
+const calls = ref([])
+const carregando = ref(false)
 
-function atualizarStatus(id, novoStatus) {
-  const chamado = calls.value.find(c => c.id === id)
-  if (chamado) {
-    chamado.status = novoStatus
+async function carregarChamados() {
+  try {
+    carregando.value = true
+    const data = await TicketsDAO.listar()
+
+    calls.value = data.map(ticket => ({
+      id: ticket.id,
+      title: ticket.title,
+      description: ticket.description,
+      priority: ticket.priority,
+      location: ticket.location,
+      date: ticket.createdAt || ticket.date,
+      status: ticket.status,
+      showDropdown: false
+    }))
+
+  } finally {
+    carregando.value = false
   }
 }
+
+async function atualizarStatus(id, novoStatus) {
+  await TicketsDAO.atualizar(id, { status: novoStatus })
+  await carregarChamados() // atualiza UI com backend
+}
+
+onMounted(() => carregarChamados())
 </script>
