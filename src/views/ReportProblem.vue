@@ -4,10 +4,16 @@ import { useRouter } from 'vue-router';
 import { QrCode, Camera, MapPin } from 'lucide-vue-next';
 import BaseButton from '../components/BaseButton.vue';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { locais } from '../mock/MockDB'
+import { locais } from '../mock/MockDB';
+import TicketsDAO from '../services/TicketsDAO';
 
 const router = useRouter();
 const isScanning = ref(false);
+const isReporting = ref(false);
+const selectedLocation = ref('');
+const ticketTitle = ref('');
+const ticketDescription = ref('');
+const ticketPriority = ref('Normal');
 
 let html5QrcodeScanner = null;
 
@@ -27,9 +33,9 @@ function startScan() {
 
 function onScanSuccess(decodedText, decodedResult) {
     console.log(`Código lido com sucesso: ${decodedText}`, decodedResult);
-    alert(`QR Code escaneado! Conteúdo: ${decodedText}`);
+    selectedLocation.value = decodedText;
+    isReporting.value = true;
     stopScanner();
-
 }
 
 function onScanFailure(error) {
@@ -52,15 +58,48 @@ function cancelScan() {
     stopScanner();
 }
 
+function selectLocation(locationId) {
+    selectedLocation.value = locationId;
+    isReporting.value = true;
+}
+
+async function submitTicket() {
+    if (!ticketTitle.value || !ticketDescription.value) {
+        alert('Por favor, preencha o título e a descrição do problema.');
+        return;
+    }
+
+    try {
+        const ticket = {
+            title: ticketTitle.value,
+            description: ticketDescription.value,
+            location: selectedLocation.value,
+            priority: ticketPriority.value,
+            status: 'Aberto'
+        };
+
+        await TicketsDAO.criar(ticket);
+        alert('Chamado criado com sucesso!');
+        resetForm();
+    } catch (error) {
+        console.error('Erro ao criar chamado:', error);
+        alert('Erro ao criar chamado. Tente novamente.');
+    }
+}
+
+function resetForm() {
+    isReporting.value = false;
+    selectedLocation.value = '';
+    ticketTitle.value = '';
+    ticketDescription.value = '';
+    ticketPriority.value = 'Normal';
+}
+
 onBeforeUnmount(() => {
     if (html5QrcodeScanner) {
         stopScanner();
     }
 });
-
-function goToReport(locationId) {
-    alert(`Redirecionando para abrir chamado no local ID: ${locationId}`);
-}
 </script>
 
 <template>
@@ -77,7 +116,7 @@ function goToReport(locationId) {
                 </div>
                 <hr />
 
-                <div v-if="!isScanning">
+                <div v-if="!isScanning && !isReporting">
                     <button @click="startScan"
                         class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-700 py-3 font-bold text-white transition-colors hover:bg-green-800">
                         <Camera class="h-6 w-6" />
@@ -88,7 +127,8 @@ function goToReport(locationId) {
                         <h2 class="text-sm font-semibold uppercase text-gray-500">Acesso Rápido</h2>
 
                         <div v-for="(local, i) in locais.slice(0, 5)"
-                            class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
+                            class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200"
+                            @click="selectLocation(local.nome)" :key="i">
                             <MapPin class="h-6 w-6 text-gray-600" />
                             <div>
                                 <p class="font-bold text-gray-800">{{ local.nome }}</p>
@@ -97,7 +137,7 @@ function goToReport(locationId) {
                     </div>
                 </div>
 
-                <div v-else class="flex flex-col items-center gap-6 text-center">
+                <div v-else-if="isScanning" class="flex flex-col items-center gap-6 text-center">
                     <button
                         class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-800 py-3 font-bold text-white"
                         disabled>
@@ -110,6 +150,45 @@ function goToReport(locationId) {
                     <BaseButton @click="cancelScan" variant="outlined">
                         Cancelar
                     </BaseButton>
+                </div>
+
+                <div v-else-if="isReporting" class="flex flex-col items-center gap-6 text-center">
+                    <h2 class="text-xl font-bold text-gray-800">Reportar Problema</h2>
+                    <p class="text-sm text-gray-500">Local selecionado: {{ selectedLocation }}</p>
+
+                    <div class="w-full space-y-4">
+                        <input
+                            v-model="ticketTitle"
+                            type="text"
+                            placeholder="Título do problema"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+
+                        <textarea
+                            v-model="ticketDescription"
+                            placeholder="Descrição do problema"
+                            rows="4"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        ></textarea>
+
+                        <select
+                            v-model="ticketPriority"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            <option value="Normal">Normal</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Crítica">Crítica</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <BaseButton @click="submitTicket" variant="primary">
+                            Enviar Chamado
+                        </BaseButton>
+                        <BaseButton @click="resetForm" variant="outlined">
+                            Cancelar
+                        </BaseButton>
+                    </div>
                 </div>
             </div>
         </div>
