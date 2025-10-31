@@ -98,7 +98,7 @@ const carregando = ref(false)
 async function carregarChamados() {
   try {
     carregando.value = true
-    const data = await TicketsDAO.listar()
+    const data = await TicketsDAO.getAll()
 
     calls.value = data.map(ticket => ({
       id: ticket.id,

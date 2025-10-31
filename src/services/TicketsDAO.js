@@ -1,27 +1,20 @@
-import GenericDAO from './GenericDAO'
+import GenericDAO from "./GenericDAO";
+import { ApiRegistry } from "../api/ApiRegistry";
 
-const dao = new GenericDAO('/api/v1/tickets')
+class TicketDAO extends GenericDAO {
+  constructor() {
+    super(ApiRegistry.sigma, "/api/v1/tickets");
+  }
 
-export default {
-  listar() {
-    return dao.getAll()
-  },
-  buscarPorId(id) {
-    return dao.getById(id)
-  },
-  criar(ticket) {
-    return dao.insert(ticket)
-  },
-  atualizar(id, ticket) {
-    return dao.update(id, ticket)
-  },
-  deletar(id) {
-    return dao.delete(id)
-  },
   listarMeusTickets() {
-    return apiRequest("get", "/api/v1/tickets/my-tickets")
-  },
+    return this.api.get(`${this.baseURL}/my-tickets`);
+  }
+
   gerarRelatorio(startDate, endDate) {
-    return apiRequest("get", `/api/v1/tickets/report?startDate=${startDate}&endDate=${endDate}`)
+    return this.api.get(`${this.baseURL}/report`, {
+      params: { startDate, endDate },
+    });
   }
 }
+
+export default new TicketDAO();

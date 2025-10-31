@@ -1,8 +1,9 @@
 import GenericDAO from "./GenericDAO";
+import { ApiRegistry } from "../api/ApiRegistry";
 
 class UserDAO extends GenericDAO {
   constructor() {
-    super("/api/v1/registerif/user");
+    super(ApiRegistry.registerIF, "/api/v1/registerif/user");
   }
 }
 

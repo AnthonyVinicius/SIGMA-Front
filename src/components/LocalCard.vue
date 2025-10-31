@@ -46,7 +46,7 @@
 
         <button
             class="w-full bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm  justify-center"
-            @click="$emit('generateQr')">
+            @click.stop="$emit('generateQr')">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-qr-code-icon lucide-qr-code">
