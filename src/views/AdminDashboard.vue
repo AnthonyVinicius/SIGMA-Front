@@ -76,13 +76,6 @@ const actions = [
     to: "/manageLocals",
   },
   {
-    icon: Cog,
-    title: "Tipos de Itens",
-    description: "Gerenciar e cadastrar tipos de itens",
-    color: "text-green-800",
-    to: "/itensType",
-  },
-  {
     icon: TextAlignJustify,
     title: "Todos os Chamados",
     description: "Visualizar e gerenciar chamados",
@@ -92,71 +85,72 @@ const actions = [
 ]
 </script>
 
+
 <template>
   <BaseLayout>
-    <div class="space-y-8">
-      <header>
-        <h1 class="text-2xl font-bold text-ponto-if-green">Dashboard do Administrador</h1>
-        <p class="text-gray-600">Bem-vindo ao sistema de manutenção do IFPE</p>
+    <div class="space-y-10">
+      <header class="border-b pb-6">
+        <h1 class="text-3xl font-bold text-[#1C5E27]">Painel do Administrador</h1>
+        <p class="text-gray-600 mt-1">Gerencie e visualize os chamados do IFPE</p>
       </header>
 
-      <section class="flex flex-wrap justify-center gap-10">
-        <div class="w-80 bg-white p-10 rounded-lg shadow-md flex flex-col items-center justify-center">
-          <p class="text-lg font-semibold text-gray-700 text-center mb-2">Chamados Por Prioridade</p>
-          <BaseChart :chart-data="chamadosPorPrioridade" chart-type="doughnut" class="w-full h-64" />
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+        <div class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
+          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">Chamados por Prioridade</p>
+          <BaseChart :chart-data="chamadosPorPrioridade" chart-type="doughnut" class="w-64 h-64" />
         </div>
-
-        <div class="w-80 bg-white p-10 rounded-lg shadow-md flex flex-col items-center justify-center">
-          <p class="text-lg font-semibold text-gray-700 text-center mb-2">Chamados Por Status</p>
-          <BaseChart :chart-data="chamadosPorStatus" chart-type="doughnut" class="w-full h-64" />
+        <div class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
+          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">Chamados por Status</p>
+          <BaseChart :chart-data="chamadosPorStatus" chart-type="doughnut" class="w-64 h-64" />
         </div>
-
-        <div class="w-80 bg-white p-10 rounded-lg shadow-md flex flex-col items-center justify-center">
-          <p class="text-lg font-semibold text-gray-700 text-center mb-2">Chamados Por Local</p>
-          <BaseChart :chart-data="chamadosPorLocal" chart-type="doughnut" class="w-full h-64" />
+        <div class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
+          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">Chamados por Local</p>
+          <BaseChart :chart-data="chamadosPorLocal" chart-type="doughnut" class="w-64 h-64" />
         </div>
       </section>
 
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <RouterLink v-for="action in actions" :key="action.title" :to="action.to">
-          <Actions>
+      <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <RouterLink v-for="action in actions" :key="action.title" :to="action.to" class="group">
+          <Actions class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
             <template #logo>
-              <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
+              <component :is="action.icon" :class="`${action.color} w-10 h-10 group-hover:scale-110 transition-transform`" />
             </template>
-            <template #title>{{ action.title }}</template>
-            <template #description>{{ action.description }}</template>
+            <template #title>
+              <span class="text-gray-800 font-semibold">{{ action.title }}</span>
+            </template>
+            <template #description>
+              <span class="text-gray-500 text-sm">{{ action.description }}</span>
+            </template>
           </Actions>
         </RouterLink>
-      </div>
+      </section>
 
-      <!-- Últimos Chamados -->
-      <section class="bg-white p-5 rounded-md shadow-sm">
-        <div class="flex items-center mb-3">
-          <h2 class="text-lg font-semibold">Últimos Chamados Assumidos</h2>
-          <RouterLink to="/allReports" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
+      <section class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="flex items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-800">Últimos Chamados Assumidos</h2>
+          <RouterLink to="/allReports" class="ml-auto text-[#1C5E27] hover:underline text-sm font-medium">Ver todos</RouterLink>
         </div>
 
-        <div class="flex flex-col gap-6">
-          <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i">
-            <template #icon>
-              <component :is="chamado.icon" class="w-8 h-8 text-green-700" />
-            </template>
+        <div v-if="recentCalls.length === 0" class="text-center py-6 text-gray-500">
+          Nenhum chamado registrado recentemente.
+        </div>
 
+        <div v-else class="flex flex-col gap-5">
+          <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i" class="border rounded-md p-3 shadow-sm hover:shadow-md transition">
+            <template #icon>
+              <component :is="chamado.icon" class="w-8 h-8 text-[#1C5E27]" />
+            </template>
             <template #title>{{ chamado.title }}</template>
             <template #description>{{ chamado.description }}</template>
             <template #location>{{ chamado.location }}</template>
             <template #priority>{{ chamado.priority }}</template>
             <template #counter>{{ chamado.counter }}</template>
             <template #date>{{ chamado.date }}</template>
-
             <template #status>
               <div class="relative inline-block text-left w-40">
-                <!-- Botão do status atual -->
                 <button
                   @click="chamado.showDropdown = !chamado.showDropdown"
-                  class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium
-                        transition-colors"
+                  class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
                   :class="{
                     'bg-red-100 text-red-700 border-red-300': chamado.status === 'Aberto',
                     'bg-yellow-100 text-yellow-700 border-yellow-300': chamado.status === 'Em Andamento',
@@ -164,24 +158,13 @@ const actions = [
                   }"
                 >
                   {{ chamado.status }}
-                  <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor">
+                  <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-
-                <!-- Dropdown -->
-                <div
-                  v-show="chamado.showDropdown"
-                  class="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10 overflow-hidden"
-                >
-                  <ul class="w-full">
-                    <li
-                      v-for="status in ['Aberto', 'Em Andamento', 'Concluído']"
-                      :key="status"
-                      @click="atualizarStatus(chamado.id, status)"
-                      class="w-full px-3 py-0.5 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 truncate"
-                    >
+                <div v-show="chamado.showDropdown" class="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10">
+                  <ul>
+                    <li v-for="status in ['Aberto', 'Em Andamento', 'Concluído']" :key="status" @click="atualizarStatus(chamado.id, status)" class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition">
                       {{ status }}
                     </li>
                   </ul>
@@ -194,3 +177,4 @@ const actions = [
     </div>
   </BaseLayout>
 </template>
+

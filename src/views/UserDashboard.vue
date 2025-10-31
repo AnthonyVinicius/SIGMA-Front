@@ -43,10 +43,10 @@ const actions = [
 <template>
     <BaseLayout>
         <div class="container mx-auto space-y-8 px-4">
-            <header>
-                <h1 class="text-2xl font-bold text-ponto-if-green">Dashboard do Usuário</h1>
-                <p class="text-gray-600">Bem-vindo ao sistema de manutenção do IFPE</p>
-            </header>
+   <header class="border-b pb-6">
+        <h1 class="text-3xl font-bold text-[#1C5E27]">Painel do Usuário</h1>
+        <p class="text-gray-600 mt-1">Acompanhe o status dos seus chamados</p>
+      </header>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <StatusChamado v-if="totalAbertos > 0" class="bg-white rounded-md shadow-sm p-4">
@@ -76,7 +76,7 @@ const actions = [
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <RouterLink v-for="action in actions" :key="action.title" :to="action.to">
-                    <Actions>
+                    <Actions class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
                         <template #logo>
                             <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
                         </template>
