@@ -94,7 +94,6 @@
             </p>
           </div>
 
-          <!-- Toggle para mudar tipo de usuário -->
           <div class="flex items-center gap-3 mt-2">
             <span class="text-sm text-gray-600 font-medium">Modo:</span>
             <button
@@ -131,7 +130,6 @@ defineProps({
 
 const router = useRouter()
 
-// estado reativo que pode ser trocado na apresentação
 const userAdm = ref(true)
 
 const menuItemsUser = shallowRef([

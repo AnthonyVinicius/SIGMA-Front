@@ -3,7 +3,7 @@ import UserDashboard from "../views/UserDashboard.vue";
 import AdminDashboard from '../views/AdminDashboard.vue'
 import LoginView from "../views/LoginView.vue";
 import ReportProblem from "../views/ReportProblem.vue";
-import ManageLocalView from "../views/ManageLocalView.vue"
+import ManageLocalView from "../views/LocalManagerView.vue"
 import AllReportsView from "../views/AllReportsView.vue";
 import ReportCreateView from "../views/ReportCreateView.vue";
 

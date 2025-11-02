@@ -44,8 +44,7 @@
           @generateQr="openQrModal(local)"
         >
           <template #title>{{ local.name }}</template>
-          <template #id>{{ local.id }}</template>
-
+                    
           <template #items>
             <span
               v-if="local.category"
@@ -120,7 +119,6 @@ const qrLocalNome = ref('')
 
 onMounted(loadData)
 
-// --- CHAMADA REAL À API ---
 async function loadData() {
   try {
     const [dataLocais] = await Promise.all([EnviromentalDAO.getAll()])

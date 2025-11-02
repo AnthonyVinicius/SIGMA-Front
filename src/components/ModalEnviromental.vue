@@ -115,7 +115,6 @@ function closeModal() {
 }
 
 function handleSubmit() {
-    console.log("Novo local com vínculo:", formData.value.environmentParentId);
     emit('submit', { ...formData.value });
 }
 </script>

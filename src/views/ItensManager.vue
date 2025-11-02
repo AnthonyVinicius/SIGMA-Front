@@ -52,7 +52,6 @@
               <p class="text-gray-700 text-sm"><strong>Marca:</strong> {{ item.mark }}</p>
               <p class="text-gray-700 text-sm"><strong>Modelo:</strong> {{ item.model }}</p>
               <p class="text-gray-700 text-sm"><strong>Descrição:</strong> {{ item.description }}</p>
-              <p class="text-xs text-gray-400 mt-2">ID: {{ item.id }}</p>
             </div>
 
             <div class="flex justify-end gap-3 mt-4">
@@ -137,7 +136,7 @@ async function loadLocalInfo() {
 
 async function loadItens() {
   try {
-    itens.value = await ComponentDAO.getAll()
+    itens.value = await EnvironmentDAO.getComponentsByEnviromentId(localId)
   } catch (error) {
     console.error("Erro ao carregar itens:", error)
   } finally {
