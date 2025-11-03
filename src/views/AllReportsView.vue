@@ -84,7 +84,7 @@ async function atualizarStatus(chamado, novoStatus) {
     };
 
     console.log(payload)
-    //await TicketsDAO.update(chamado.id, payload);
+    await TicketsDAO.update(chamado.id, payload);
     chamado.status = novoStatus;
   } catch (error) {
     console.error('Error updating status:', error);
