@@ -1,5 +1,6 @@
+```vue
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import BaseLayout from '../components/BaseLayout.vue'
 import Actions from '../components/Actions.vue'
 import StatusChamado from '../components/StatusChamado.vue'
@@ -7,18 +8,29 @@ import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
 import { calls } from '../mock/MockDB'
 import { CircleAlert, Clock, CircleCheck, QrCode, TextAlignJustify } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
+import TicketsDAO from '../services/TicketsDAO'
 
 const totalAbertos = computed(() => calls.filter(c => c.status === 'Aberto').length)
 const totalAndamento = computed(() => calls.filter(c => c.status === 'Em Andamento').length)
 const totalConcluidos = computed(() => calls.filter(c => c.status === 'Concluído').length)
+const recentCalls = ref([])
 
-const recentCalls = computed(() =>
-    [...calls].sort(
-        (a, b) =>
-            new Date(b.date.split('/').reverse().join('-')) -
-            new Date(a.date.split('/').reverse().join('-'))
-    ).slice(0, 5)
-)
+async function loadTickets() {
+    try {
+        recentCalls.value = await TicketsDAO.getAll()
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+function formatarData(isoString) {
+    if (!isoString) return ''
+    const data = new Date(isoString)
+    const dia = String(data.getDate()).padStart(2, '0')
+    const mes = String(data.getMonth() + 1).padStart(2, '0')
+    const ano = String(data.getFullYear()).slice(-2)
+    return `${dia}/${mes}/${ano}`
+}
 
 const actions = [
     {
@@ -38,15 +50,19 @@ const actions = [
         to: "/allReports"
     },
 ]
+
+onMounted(async () => {
+    await loadTickets()
+})
 </script>
 
 <template>
     <BaseLayout>
         <div class="container mx-auto space-y-8 px-4">
-   <header class="border-b pb-6">
-        <h1 class="text-3xl font-bold text-[#1C5E27]">Painel do Usuário</h1>
-        <p class="text-gray-600 mt-1">Acompanhe o status dos seus chamados</p>
-      </header>
+            <header class="border-b pb-6">
+                <h1 class="text-3xl font-bold text-[#1C5E27]">Painel do Usuário</h1>
+                <p class="text-gray-600 mt-1">Acompanhe o status dos seus chamados</p>
+            </header>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <StatusChamado v-if="totalAbertos > 0" class="bg-white rounded-md shadow-sm p-4">
@@ -76,7 +92,8 @@ const actions = [
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <RouterLink v-for="action in actions" :key="action.title" :to="action.to">
-                    <Actions class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
+                    <Actions
+                        class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
                         <template #logo>
                             <component :is="action.icon" :class="`${action.color} w-10 h-10`" />
                         </template>
@@ -95,34 +112,29 @@ const actions = [
                 <div class="flex flex-col gap-3">
                     <div class="flex flex-col gap-3">
                         <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i">
-                            <template #icon>
-                                <component :is="chamado.icon" class="w-8 h-8 text-green-700" />
-                            </template>
-
-                            <template #title>{{ chamado.title }}</template>
+                      
+                            <template #title>{{ chamado.component.description }}</template>
                             <template #description>{{ chamado.description }}</template>
-                            <template #location>{{ chamado.location }}</template>
+                            <template #location>{{ chamado.environment.name }}</template>
                             <template #priority>{{ chamado.priority }}</template>
                             <template #counter>{{ chamado.counter }}</template>
-                            <template #date>{{ chamado.date }}</template>
+                            <template #date>{{ formatarData(chamado.createdAt) }}</template>
 
                             <template #status>
-                            <span
-                                class="inline-block w-32 text-center px-2 py-1.5 rounded-md font-medium text-sm"
-                                :class="{
-                                'bg-red-100 text-red-700': chamado.status === 'Aberto',
-                                'bg-yellow-100 text-yellow-700': chamado.status === 'Em Andamento',
-                                'bg-green-100 text-green-700': chamado.status === 'Concluído'
-                                }"
-                            >
-                                {{ chamado.status }}
-                            </span>
+                                <span class="inline-block w-32 text-center px-2 py-1.5 rounded-md font-medium text-sm"
+                                    :class="{
+                                        'bg-red-100 text-red-700': chamado.status === 'Aberto',
+                                        'bg-yellow-100 text-yellow-700': chamado.status === 'Em Andamento',
+                                        'bg-green-100 text-green-700': chamado.status === 'Concluído'
+                                    }">
+                                    {{ chamado.status }}
+                                </span>
                             </template>
                         </ItensTabelaChamado>
                     </div>
-
                 </div>
             </div>
         </div>
     </BaseLayout>
 </template>
+```

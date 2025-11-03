@@ -6,12 +6,12 @@ import Actions from '../components/Actions.vue'
 import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
 import BaseChart from '../components/BaseChart.vue'
 import { TextAlignJustify, MapPin } from "lucide-vue-next"
-import TicketDAO from '../services/TicketsDAO'
+import TicketsDAO from '../services/TicketsDAO'
 
 const recentCalls = ref([])
 
 const COLORS = {
-  status: ["#3b82f6", "#f97316", "#10b981"],
+  status: ["#3b82f6", "#f97316", "#10b981", "#14b8a6", "#6b7280"],
   priority: ["#ef4444", "#f59e0b", "#10b981"],
   location: ["#8b5cf6", "#ec4899", "#22d3ee", "#14b8a6"],
 }
@@ -20,22 +20,13 @@ function gerarGrafico(campo, cores = []) {
   if (!recentCalls.value.length) {
     return {
       labels: [],
-      datasets: [
-        {
-          label: "Chamados",
-          data: [],
-          backgroundColor: [],
-          borderWidth: 1,
-          borderColor: "#ffffff",
-        },
-      ],
+      datasets: [{ label: "Chamados", data: [], backgroundColor: [], borderWidth: 1, borderColor: "#ffffff" }],
     }
   }
 
   const contagem = recentCalls.value.reduce((acc, c) => {
-    let valorCampo
-    if (campo === "location") valorCampo = c.environment?.name || "Desconhecido"
-    else valorCampo = c[campo] || "Indefinido"
+    const valorCampo =
+      campo === "location" ? c.environment?.name || "Desconhecido" : c[campo] || "Indefinido"
     acc[valorCampo] = (acc[valorCampo] || 0) + 1
     return acc
   }, {})
@@ -60,18 +51,34 @@ const chamadosPorLocal = computed(() => gerarGrafico("location", COLORS.location
 
 async function loadTickets() {
   try {
-    recentCalls.value = await TicketDAO.getAll()
+    recentCalls.value = await TicketsDAO.getAll()
   } catch (error) {
     console.error(error)
   }
 }
 
-function atualizarStatus(id, novoStatus) {
-  const chamado = recentCalls.value.find(c => c.id === id)
-  if (chamado) {
-    chamado.status = novoStatus
-    chamado.showDropdown = false
+async function atualizarStatus(id, novoStatus) {
+  try {
+    await TicketsDAO.update(id, { status: novoStatus })
+    const chamado = recentCalls.value.find(c => c.id === id)
+    if (chamado) chamado.status = novoStatus
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error)
   }
+}
+
+function toggleDropdown(chamado) {
+  recentCalls.value.forEach(c => (c.showDropdown = false))
+  chamado.showDropdown = !chamado.showDropdown
+}
+
+function formatarData(isoString) {
+  if (!isoString) return ''
+  const data = new Date(isoString)
+  const dia = String(data.getDate()).padStart(2, '0')
+  const mes = String(data.getMonth() + 1).padStart(2, '0')
+  const ano = String(data.getFullYear()).slice(-2)
+  return `${dia}/${mes}/${ano}`
 }
 
 const actions = [
@@ -105,25 +112,24 @@ onMounted(async () => {
       </header>
 
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-        <div class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
-          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">Chamados por Prioridade</p>
-          <BaseChart :chart-data="chamadosPorPrioridade" chart-type="doughnut" class="w-64 h-64" />
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
-          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">Chamados por Status</p>
-          <BaseChart :chart-data="chamadosPorStatus" chart-type="doughnut" class="w-64 h-64" />
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
-          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">Chamados por Local</p>
-          <BaseChart :chart-data="chamadosPorLocal" chart-type="doughnut" class="w-64 h-64" />
+        <div v-for="(grafico, titulo) in {
+          'Chamados por Prioridade': chamadosPorPrioridade,
+          'Chamados por Status': chamadosPorStatus,
+          'Chamados por Local': chamadosPorLocal
+        }" :key="titulo"
+          class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
+          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">{{ titulo }}</p>
+          <BaseChart :chart-data="grafico" chart-type="doughnut" class="w-64 h-64" />
         </div>
       </section>
 
       <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <RouterLink v-for="action in actions" :key="action.title" :to="action.to" class="group">
-          <Actions class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
+          <Actions
+            class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
             <template #logo>
-              <component :is="action.icon" :class="`${action.color} w-10 h-10 group-hover:scale-110 transition-transform`" />
+              <component :is="action.icon"
+                :class="`${action.color} w-10 h-10 group-hover:scale-110 transition-transform`" />
             </template>
             <template #title>
               <span class="text-gray-800 font-semibold">{{ action.title }}</span>
@@ -138,7 +144,9 @@ onMounted(async () => {
       <section class="bg-white p-6 rounded-lg shadow-sm">
         <div class="flex items-center mb-4">
           <h2 class="text-lg font-semibold text-gray-800">Últimos Chamados Assumidos</h2>
-          <RouterLink to="/allReports" class="ml-auto text-[#1C5E27] hover:underline text-sm font-medium">Ver todos</RouterLink>
+          <RouterLink to="/allReports" class="ml-auto text-[#1C5E27] hover:underline text-sm font-medium">
+            Ver todos
+          </RouterLink>
         </div>
 
         <div v-if="recentCalls.length === 0" class="text-center py-6 text-gray-500">
@@ -146,40 +154,42 @@ onMounted(async () => {
         </div>
 
         <div v-else class="flex flex-col gap-5">
-          <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i" class="border rounded-md p-3 shadow-sm hover:shadow-md transition">
-            <template #icon>
-              <component :is="chamado.icon" class="w-8 h-8 text-[#1C5E27]" />
-            </template>
-            <template #title>{{ chamado.title }}</template>
+          <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i"
+            class="border rounded-md p-3 shadow-sm hover:shadow-md transition">
+            <template #title>{{ chamado.component?.description }}</template>
             <template #description>{{ chamado.description }}</template>
             <template #location>{{ chamado.environment?.name }}</template>
             <template #priority>{{ chamado.priority }}</template>
-            <template #date>{{ chamado.createdAt }}</template>
-            <template #status>
-              <div class="relative inline-block text-left w-40">
-                <button
-                  @click="chamado.showDropdown = !chamado.showDropdown"
-                  class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
-                  :class="{
-                    'bg-red-100 text-red-700 border-red-300': chamado.status === 'Aberto',
-                    'bg-yellow-100 text-yellow-700 border-yellow-300': chamado.status === 'Em Andamento',
-                    'bg-green-100 text-green-700 border-green-300': chamado.status === 'Concluído'
-                  }"
-                >
-                  {{ chamado.status }}
-                  <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <div v-show="chamado.showDropdown" class="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10">
-                  <ul>
-                    <li v-for="status in ['Aberto', 'Em Andamento', 'Concluído']" :key="status" @click="atualizarStatus(chamado.id, status)" class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition">
-                      {{ status }}
-                    </li>
-                  </ul>
-                </div>
+            <template #counter>{{ chamado.counter }}</template>
+            <template #date>{{ formatarData(chamado.createdAt) }}</template>
+
+            <div class="relative inline-block text-left w-40">
+              <button @click="toggleDropdown(chamado)"
+                class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
+                :class="{
+                  'bg-red-100 text-red-700 border-red-300': chamado.status === 'OPEN',
+                  'bg-yellow-100 text-yellow-700 border-yellow-300': chamado.status === 'IN_PROGRESS',
+                  'bg-orange-100 text-orange-700 border-orange-300': chamado.status === 'PENDING',
+                  'bg-green-100 text-green-700 border-green-300': chamado.status === 'RESOLVED',
+                  'bg-gray-100 text-gray-700 border-gray-300': chamado.status === 'CLOSED'
+                }">
+                {{ chamado.status }}
+                <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <div v-show="chamado.showDropdown" class="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10">
+                <ul>
+                  <li v-for="status in ['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED']" :key="status"
+                    @click="atualizarStatus(chamado.id, status); chamado.showDropdown = false"
+                    class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition">
+                    {{ status }}
+                  </li>
+                </ul>
               </div>
-            </template>
+            </div>
           </ItensTabelaChamado>
         </div>
       </section>

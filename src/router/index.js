@@ -2,10 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import UserDashboard from "../views/UserDashboard.vue";
 import AdminDashboard from '../views/AdminDashboard.vue'
 import LoginView from "../views/LoginView.vue";
-import ReportProblem from "../views/ReportProblem.vue";
+import QrCodeReportView from "../views/QrCodeReportView.vue";
 import ManageLocalView from "../views/LocalManagerView.vue"
 import AllReportsView from "../views/AllReportsView.vue";
-import ReportCreateView from "../views/ReportCreateView.vue";
+import FormReportView from "../views/FormReportView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -32,7 +32,7 @@ const router = createRouter({
     {
       path: "/reportar",
       name: "reportar-problema",
-      component: ReportProblem,
+      component: QrCodeReportView,
     },
     {
       path: "/manageLocals",
@@ -52,7 +52,7 @@ const router = createRouter({
     {
       path: "/report-create",
       name: "report-create",
-      component: ReportCreateView,
+      component: FormReportView,
     },
   ],
 });

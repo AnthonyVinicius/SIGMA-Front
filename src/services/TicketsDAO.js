@@ -6,7 +6,7 @@ class TicketDAO extends GenericDAO {
     super(ApiRegistry.sigma, "/api/v1/tickets");
   }
 
-  listarMeusTickets() {
+  myTickets() {
     return this.api.get(`${this.baseURL}/my-tickets`);
   }
 
