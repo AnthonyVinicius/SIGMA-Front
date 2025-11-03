@@ -9,7 +9,7 @@ const environments = ref([]);
 const selectedEnvironment = ref(null);
 const components = ref([]);
 
-const currentUserId = "11111111-2222-3333-4444-555555555555";
+const currentUserId = "222cfd43-b324-4050-8e13-8878c6485770";
 
 const ticket = ref({
   description: "",
@@ -18,7 +18,6 @@ const ticket = ref({
   componentId: "",
   environmentId: "",
   status: "OPEN",
-  assignedToId: null,
   createdById: currentUserId
 });
 
@@ -74,11 +73,10 @@ async function submitTicket() {
       status: ticket.value.status,
       priority: ticket.value.priority,
       problemType: ticket.value.problemType,
-      component: ticket.value.componentId,      // ✅ renomeado
-      environment: ticket.value.environmentId,  // ✅ renomeado
-      assignedTo: ticket.value.assignedToId,    // ✅ renomeado
-      createdBy: ticket.value.createdById,      // ✅ renomeado
-      ticketFile: []                            // ✅ adicionado conforme DTO
+      component: ticket.value.componentId,     
+      environment: ticket.value.environmentId,  
+      createdBy: ticket.value.createdById,      
+      ticketFile: []                            
     };
 
     await TicketsDAO.insert(payload);
@@ -103,7 +101,6 @@ function resetForm() {
     componentId: "",
     environmentId: "",
     status: "OPEN",
-    assignedToId: null,
     createdById: currentUserId
   };
 }

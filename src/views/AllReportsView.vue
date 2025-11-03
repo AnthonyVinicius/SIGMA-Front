@@ -118,7 +118,7 @@ async function carregarChamados() {
 
 async function atualizarStatus(id, novoStatus) {
   await TicketsDAO.atualizar(id, { status: novoStatus })
-  await carregarChamados() // atualiza UI com backend
+  await carregarChamados() 
 }
 
 onMounted(() => carregarChamados())

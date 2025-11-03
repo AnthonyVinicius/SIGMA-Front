@@ -16,7 +16,7 @@ const loading = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
 
-const currentUserId = "11111111-2222-3333-4444-555555555555";
+const currentUserId = "222cfd43-b324-4050-8e13-8878c6485770";
 
 const form = ref({
   description: "",
@@ -25,7 +25,6 @@ const form = ref({
   status: "OPEN",
   environmentId: environmentId.value,
   componentId: "",
-  assignedToId: null,
   createdById: currentUserId
 });
 
@@ -54,11 +53,10 @@ async function submitTicket() {
       status: ticket.value.status,
       priority: ticket.value.priority,
       problemType: ticket.value.problemType,
-      component: ticket.value.componentId,      // ✅ renomeado
-      environment: ticket.value.environmentId,  // ✅ renomeado
-      assignedTo: ticket.value.assignedToId,    // ✅ renomeado
-      createdBy: ticket.value.createdById,      // ✅ renomeado
-      ticketFile: []                            // ✅ adicionado conforme DTO
+      component: ticket.value.componentId,      
+      environment: ticket.value.environmentId,   
+      createdBy: ticket.value.createdById,      
+      ticketFile: []                           
     };
 
     await TicketsDAO.insert(payload);

@@ -1,28 +1,42 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import BaseLayout from '../components/BaseLayout.vue'
 import Actions from '../components/Actions.vue'
 import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
 import BaseChart from '../components/BaseChart.vue'
-import { calls as mockCalls } from '../mock/MockDB'
-import { TextAlignJustify, MapPin, Cog } from "lucide-vue-next"
+import { TextAlignJustify, MapPin } from "lucide-vue-next"
+import TicketDAO from '../services/TicketsDAO'
 
-// ✅ Estado reativo principal
-const calls = ref([...mockCalls])
-calls.value.forEach(c => c.showDropdown = false)
+const recentCalls = ref([])
 
-// ✅ Paleta de cores padronizada
 const COLORS = {
-  status: ["#3b82f6", "#f97316", "#10b981"],        // Azul, Laranja, Verde
-  priority: ["#ef4444", "#f59e0b", "#10b981", "#6366f1"], // Vermelho, Laranja, Verde, Roxo
-  location: ["#8b5cf6", "#ec4899", "#22d3ee", "#14b8a6"], // Roxo, Rosa, Ciano, Verde-água
+  status: ["#3b82f6", "#f97316", "#10b981"],
+  priority: ["#ef4444", "#f59e0b", "#10b981"],
+  location: ["#8b5cf6", "#ec4899", "#22d3ee", "#14b8a6"],
 }
 
-// ✅ Função genérica para gerar gráficos
 function gerarGrafico(campo, cores = []) {
-  const contagem = calls.value.reduce((acc, c) => {
-    acc[c[campo]] = (acc[c[campo]] || 0) + 1
+  if (!recentCalls.value.length) {
+    return {
+      labels: [],
+      datasets: [
+        {
+          label: "Chamados",
+          data: [],
+          backgroundColor: [],
+          borderWidth: 1,
+          borderColor: "#ffffff",
+        },
+      ],
+    }
+  }
+
+  const contagem = recentCalls.value.reduce((acc, c) => {
+    let valorCampo
+    if (campo === "location") valorCampo = c.environment?.name || "Desconhecido"
+    else valorCampo = c[campo] || "Indefinido"
+    acc[valorCampo] = (acc[valorCampo] || 0) + 1
     return acc
   }, {})
 
@@ -34,39 +48,32 @@ function gerarGrafico(campo, cores = []) {
         data: Object.values(contagem),
         backgroundColor: cores.slice(0, Object.keys(contagem).length),
         borderWidth: 1,
-        borderColor: "#ffffff", // dá contraste e separa melhor as fatias
+        borderColor: "#ffffff",
       },
     ],
   }
 }
 
-// ✅ Computed reativos (recalculam ao alterar status)
 const chamadosPorStatus = computed(() => gerarGrafico("status", COLORS.status))
 const chamadosPorPrioridade = computed(() => gerarGrafico("priority", COLORS.priority))
 const chamadosPorLocal = computed(() => gerarGrafico("location", COLORS.location))
 
-
-// ✅ Lista dos chamados mais recentes
-const recentCalls = computed(() =>
-  [...calls.value]
-    .sort(
-      (a, b) =>
-        new Date(b.date.split("/").reverse().join("-")) -
-        new Date(a.date.split("/").reverse().join("-"))
-    )
-    .slice(0, 5)
-)
-
-// ✅ Função para atualizar o status de um chamado
-function atualizarStatus(id, novoStatus) {
-  const chamado = calls.value.find(c => c.id === id)
-  if (chamado) {
-    chamado.status = novoStatus
-    chamado.showDropdown = false // fecha o dropdown após a alteração
+async function loadTickets() {
+  try {
+    recentCalls.value = await TicketDAO.getAll()
+  } catch (error) {
+    console.error(error)
   }
 }
 
-// ✅ Cards de ação do dashboard
+function atualizarStatus(id, novoStatus) {
+  const chamado = recentCalls.value.find(c => c.id === id)
+  if (chamado) {
+    chamado.status = novoStatus
+    chamado.showDropdown = false
+  }
+}
+
 const actions = [
   {
     icon: MapPin,
@@ -83,8 +90,11 @@ const actions = [
     to: "/allReports",
   },
 ]
-</script>
 
+onMounted(async () => {
+  await loadTickets()
+})
+</script>
 
 <template>
   <BaseLayout>
@@ -142,10 +152,9 @@ const actions = [
             </template>
             <template #title>{{ chamado.title }}</template>
             <template #description>{{ chamado.description }}</template>
-            <template #location>{{ chamado.location }}</template>
+            <template #location>{{ chamado.environment?.name }}</template>
             <template #priority>{{ chamado.priority }}</template>
-            <template #counter>{{ chamado.counter }}</template>
-            <template #date>{{ chamado.date }}</template>
+            <template #date>{{ chamado.createdAt }}</template>
             <template #status>
               <div class="relative inline-block text-left w-40">
                 <button
@@ -177,4 +186,3 @@ const actions = [
     </div>
   </BaseLayout>
 </template>
-
