@@ -8,7 +8,6 @@ import TicketsDAO from "../services/TicketsDAO";
 const environments = ref([]);
 const selectedEnvironment = ref(null);
 const components = ref([]);
-
 const currentUserId = "222cfd43-b324-4050-8e13-8878c6485770";
 
 const ticket = ref({
@@ -45,7 +44,7 @@ async function onScanSuccess(decodedText) {
   }
 }
 
-function onScanFailure() {}
+function onScanFailure() { }
 function stopScanner() {
   stop();
   resetForm();
@@ -73,10 +72,10 @@ async function submitTicket() {
       status: ticket.value.status,
       priority: ticket.value.priority,
       problemType: ticket.value.problemType,
-      component: ticket.value.componentId,     
-      environment: ticket.value.environmentId,  
-      createdBy: ticket.value.createdById,      
-      ticketFile: []                            
+      component: ticket.value.componentId,
+      environment: ticket.value.environmentId,
+      createdBy: ticket.value.createdById,
+      ticketFile: []
     };
 
     await TicketsDAO.insert(payload);
@@ -127,8 +126,7 @@ onBeforeUnmount(stop);
         <hr />
 
         <div v-if="!isScanning && !isReporting">
-          <button
-            @click="start"
+          <button @click="start"
             class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-700 py-3 font-bold text-white transition-colors hover:bg-green-800">
             <Camera class="h-6 w-6" />
             <span>Escanear QR Code</span>
@@ -139,14 +137,13 @@ onBeforeUnmount(stop);
               Acesso Rápido
             </h2>
 
-            <div
-              v-for="(env, i) in environments.slice(0, 5)"
-              :key="env.id || i"
-              @click="selectEnvironment(env)"
-              class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
-              <MapPin class="h-6 w-6 text-gray-600" />
-              <div>
-                <p class="font-bold text-gray-800">{{ env.name }}</p>
+            <div class="max-h-60 overflow-y-auto rounded-md border border-gray-200">
+              <div v-for="(env, i) in environments" :key="env.id || i" @click="selectEnvironment(env)"
+                class="flex cursor-pointer items-center gap-4 bg-gray-100 p-3 border-b border-gray-200 transition-colors hover:bg-gray-200">
+                <MapPin class="h-6 w-6 text-gray-600" />
+                <div>
+                  <p class="font-bold text-gray-800">{{ env.name }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -154,8 +151,7 @@ onBeforeUnmount(stop);
 
         <div v-else-if="isScanning" class="flex flex-col items-center gap-6 text-center">
           <div id="qr-reader" class="w-full"></div>
-          <button
-            @click="stopScanner"
+          <button @click="stopScanner"
             class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm">
             Cancelar
           </button>
@@ -168,22 +164,17 @@ onBeforeUnmount(stop);
           </p>
 
           <div class="w-full space-y-2">
-            <textarea
-              v-model="ticket.description"
-              placeholder="Descreva o problema"
-              rows="3"
+            <textarea v-model="ticket.description" placeholder="Descreva o problema" rows="3"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
 
-            <select
-              v-model="ticket.priority"
+            <select v-model="ticket.priority"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
               <option value="LOW">Baixa</option>
               <option value="MEDIUM">Média</option>
               <option value="HIGH">Alta</option>
             </select>
 
-            <select
-              v-model="ticket.problemType"
+            <select v-model="ticket.problemType"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
               <option value="HARDWARE">Hardware</option>
               <option value="SOFTWARE">Software</option>
@@ -191,9 +182,7 @@ onBeforeUnmount(stop);
               <option value="OTHER">Outro</option>
             </select>
 
-            <select
-              v-if="components.length > 0"
-              v-model="ticket.componentId"
+            <select v-if="components.length > 0" v-model="ticket.componentId"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
               <option disabled value="">Selecione o componente</option>
               <option v-for="comp in components" :key="comp.id" :value="comp.id">
@@ -203,15 +192,12 @@ onBeforeUnmount(stop);
           </div>
 
           <div class="flex gap-4">
-            <button
-              @click="submitTicket"
-              :disabled="isSubmitting"
+            <button @click="submitTicket" :disabled="isSubmitting"
               class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm">
               {{ isSubmitting ? "Enviando..." : "Enviar Chamado" }}
             </button>
 
-            <button
-              @click="resetForm"
+            <button @click="resetForm"
               class="bg-gray-500 text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-gray-600 transition-colors text-sm">
               Cancelar
             </button>
@@ -241,11 +227,26 @@ onBeforeUnmount(stop);
   border-radius: 8px;
   overflow: hidden;
 }
+
 #qr-reader video {
   width: 100% !important;
   height: auto !important;
 }
+
 #qr-reader__dashboard_section_swaplink {
   color: #1C5E27 !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1C5E27;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
 }
 </style>

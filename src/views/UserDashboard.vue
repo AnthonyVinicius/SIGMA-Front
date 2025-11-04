@@ -42,7 +42,7 @@ const actions = [
         title: 'Meus Chamados',
         description: 'Visualize o status dos seus chamados abertos',
         color: 'text-green-800',
-        to: '/allReports',
+        to: '/AllReportsUser',
     },
 ]
 
@@ -133,7 +133,8 @@ onMounted(async () => {
             <div class="bg-white p-5 rounded-md shadow-sm">
                 <div class="flex items-center mb-3">
                     <h2 class="text-lg font-semibold">Meus Chamados Recentes</h2>
-                    <RouterLink to="/allReports" class="ml-auto text-green-800 hover:underline">Ver todos</RouterLink>
+                    <RouterLink to="/AllReportsUser" class="ml-auto text-green-800 hover:underline">Ver todos
+                    </RouterLink>
                 </div>
 
                 <div class="flex flex-col gap-3">
