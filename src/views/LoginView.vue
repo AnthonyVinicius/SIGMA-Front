@@ -10,11 +10,11 @@
               d="M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2" />
           </svg>
         </div>
-        <h1 class="text-2xl font-bold text-white">Administração de presença</h1>
-        <p class="text-gray-300">Acesso restrito ao administrador</p>
+        <h1 class="text-2xl font-bold text-white">SIGMA</h1>
       </div>
 
-      <form class="space-y-6" @submit.prevent="handleLogin">
+      <form class="space-y-4" @submit.prevent="handleLogin">
+        <h1 class="text-xl font-bold text-white">Login</h1>
         <div>
           <label for="email" class="block mb-2 text-sm font-medium text-white">Usuário</label>
           <input v-model="email" type="email" name="email" id="email"
@@ -27,6 +27,12 @@
           <input v-model="password" type="password" name="password" id="password"
             class="w-full px-4 py-3 text-gray-800 bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
             placeholder="••••••••">
+        </div>
+        <div class="">
+          <span class="text-white">Não tem conta? </span>
+          <router-link to="/registerUser">
+            <span class="text-white text-lead underline hover:text-green-400">Registrar-se</span>
+          </router-link>
         </div>
 
         <div>

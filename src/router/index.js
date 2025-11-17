@@ -7,6 +7,7 @@ import ManageLocalView from "../views/LocalManagerView.vue"
 import AllReportsView from "../views/AllReportsView.vue";
 import AllReportsUserView from "../views/AllReportsUserView.vue";
 import FormReportView from "../views/FormReportView.vue";
+import RegisterView from "../views/RegisterView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -59,6 +60,11 @@ const router = createRouter({
       path: "/report-create",
       name: "report-create",
       component: FormReportView,
+    },
+    {
+      path: "/registerUser",
+      name: "registerUser",
+      component: RegisterView,
     },
   ],
 });
