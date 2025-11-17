@@ -47,7 +47,7 @@ const calls = ref([]);
 
 async function loadTickets() {
   try {
-    calls.value = await TicketsDAO.getAll();
+    calls.value = await TicketsDAO.myTickets();
   } catch (error) {
     console.error("Error loading tickets:", error);
   }

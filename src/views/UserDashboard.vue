@@ -11,11 +11,11 @@ import TicketsDAO from '../services/TicketsDAO'
 const recentCalls = ref([])
 
 async function loadTickets() {
-    try {
-        recentCalls.value = await TicketsDAO.getAll()
-    } catch (error) {
-        console.error(error)
-    }
+  try {
+    recentCalls.value = await TicketsDAO.myTickets();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function formatarData(isoString) {

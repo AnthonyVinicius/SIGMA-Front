@@ -7,12 +7,15 @@ class TicketDAO extends GenericDAO {
   }
 
   myTickets() {
-    return this.api.get(`${this.baseURL}/my-tickets`);
+    return this.api.get(`${this.baseURL}/my-tickets`, {
+      withCredentials: true, 
+    });
   }
 
   gerarRelatorio(startDate, endDate) {
     return this.api.get(`${this.baseURL}/report`, {
       params: { startDate, endDate },
+      withCredentials: true,
     });
   }
 }
