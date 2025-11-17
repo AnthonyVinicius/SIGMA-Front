@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import BaseButton from "../components/BaseButton.vue";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
+import axios from "axios";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,11 +14,14 @@ const environment = ref(null);
 const components = ref([]);
 
 const loading = ref(false);
+const isSubmitting = ref(false);
+
 const successMessage = ref("");
 const errorMessage = ref("");
 
-const currentUserId = "222cfd43-b324-4050-8e13-8878c6485770";
+const currentUserId = ref(null); // agora vem do backend
 
+// Formulário corrigido
 const form = ref({
   description: "",
   priority: "MEDIUM",
@@ -25,9 +29,23 @@ const form = ref({
   status: "OPEN",
   environmentId: environmentId.value,
   componentId: "",
-  createdById: currentUserId
+  createdById: null
 });
 
+// ---------- Buscar usuário autenticado ----------
+async function loadUser() {
+  try {
+    const { data } = await axios.get("/usuario/autenticado");
+    currentUserId.value = data.id;
+    form.value.createdById = data.id;
+  } catch (error) {
+    console.error("Erro ao carregar usuário autenticado:", error);
+    alert("Você precisa estar logado para abrir um chamado.");
+    router.push("/login");
+  }
+}
+
+// ---------- Carregar ambiente ----------
 async function loadEnvironment() {
   try {
     loading.value = true;
@@ -40,38 +58,49 @@ async function loadEnvironment() {
   }
 }
 
+// ---------- Enviar ticket ----------
 async function submitTicket() {
-  if (!ticket.value.description || !ticket.value.componentId) {
+  if (!form.value.description || !form.value.componentId) {
     alert("Preencha todos os campos antes de enviar.");
     return;
   }
 
   isSubmitting.value = true;
+
   try {
     const payload = {
-      description: ticket.value.description,
-      status: ticket.value.status,
-      priority: ticket.value.priority,
-      problemType: ticket.value.problemType,
-      component: ticket.value.componentId,      
-      environment: ticket.value.environmentId,   
-      createdBy: ticket.value.createdById,      
-      ticketFile: []                           
+      description: form.value.description,
+      status: form.value.status,
+      priority: form.value.priority,
+      problemType: form.value.problemType,
+      component: form.value.componentId,
+      environment: form.value.environmentId,
+      createdById: currentUserId.value,
+      ticketFile: [] // se no futuro quiser anexos
     };
 
     await TicketsDAO.insert(payload);
+
     alert("Chamado criado com sucesso!");
     resetForm();
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     alert("Erro ao criar chamado. Tente novamente.");
   } finally {
     isSubmitting.value = false;
   }
 }
 
+// ---------- Resetar formulário ----------
+function resetForm() {
+  form.value.description = "";
+  form.value.componentId = "";
+  form.value.priority = "MEDIUM";
+  form.value.problemType = "HARDWARE";
+}
 
 onMounted(async () => {
+  await loadUser();       // pega o login da sessão
   if (environmentId.value) {
     await loadEnvironment();
   }
@@ -80,27 +109,23 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <div
-      class="w-full max-w-2xl bg-white rounded-xl shadow p-6 space-y-6 border border-gray-200"
-    >
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow p-6 space-y-6 border border-gray-200">
+
       <div>
         <h1 class="text-2xl font-bold text-green-800">Abrir Chamado</h1>
-        <p class="text-gray-600 text-sm">
-          Descreva o problema e selecione o item afetado.
-        </p>
+        <p class="text-gray-600 text-sm">Descreva o problema e selecione o item afetado.</p>
       </div>
 
-      <div v-if="loading" class="text-gray-500 text-center py-6">
-        Carregando...
-      </div>
+      <div v-if="loading" class="text-gray-500 text-center py-6">Carregando...</div>
 
       <div v-else>
         <div v-if="environment" class="space-y-3">
+
           <p class="font-semibold text-gray-800">
-            Local:
-            <span class="text-green-700">{{ environment.name }}</span>
+            Local: <span class="text-green-700">{{ environment.name }}</span>
           </p>
 
+          <!-- Componente -->
           <label class="block text-sm font-medium text-gray-700">Componente</label>
           <select
             v-model="form.componentId"
@@ -112,6 +137,7 @@ onMounted(async () => {
             </option>
           </select>
 
+          <!-- Descrição -->
           <label class="block text-sm font-medium text-gray-700 mt-4">Descrição</label>
           <textarea
             v-model="form.description"
@@ -120,6 +146,7 @@ onMounted(async () => {
             class="border rounded-md p-2 w-full text-sm resize-none focus:ring-green-600 focus:border-green-600"
           ></textarea>
 
+          <!-- Prioridade / Tipo -->
           <div class="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">Prioridade</label>
@@ -147,24 +174,22 @@ onMounted(async () => {
             </div>
           </div>
 
+          <!-- Botão -->
           <div class="flex justify-end mt-6">
-            <BaseButton @click="submitTicket" :disabled="loading">
-              {{ loading ? "Enviando..." : "Criar Chamado" }}
+            <BaseButton @click="submitTicket" :disabled="isSubmitting">
+              {{ isSubmitting ? "Enviando..." : "Criar Chamado" }}
             </BaseButton>
           </div>
 
-          <p
-            v-if="successMessage"
-            class="text-green-600 font-medium text-sm text-center"
-          >
+          <!-- Mensagens -->
+          <p v-if="successMessage" class="text-green-600 font-medium text-sm text-center">
             {{ successMessage }}
           </p>
-          <p
-            v-if="errorMessage"
-            class="text-red-600 font-medium text-sm text-center"
-          >
+
+          <p v-if="errorMessage" class="text-red-600 font-medium text-sm text-center">
             {{ errorMessage }}
           </p>
+
         </div>
 
         <div v-else class="text-gray-500 text-center py-6">

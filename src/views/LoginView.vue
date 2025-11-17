@@ -63,25 +63,49 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'; // 1. Importe o 'ref'
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { ApiRegistry } from "../api/ApiRegistry"; // <-- caminho correto
 
 const router = useRouter();
 
-// 2. Crie as variáveis reativas para o email e a senha
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
-function handleLogin() {
-  // Agora você pode usar os valores digitados pelo usuário
-  console.log("Tentativa de login com:");
-  console.log("Email:", email.value);
-  console.log("Senha:", password.value);
+async function handleLogin() {
+  try {
+    const response = await ApiRegistry.registerIF.post("/auth/login", {
+      email: email.value,
+      password: password.value
+    });
 
-  // Aqui você faria a chamada para sua API para validar o login
-  // if (loginValido) {
-    localStorage.setItem('user-token', 'meu-token-secreto-123');
-    router.push('/userDashboard');
-  // }
+    // O backend retorna o token diretamente?
+    // Se retornar { token: "abc" }, adapte para response.data.token
+    const token = response.data;
+
+    if (!token) {
+      throw new Error("Token não recebido do servidor.");
+    }
+
+    // Decodifica o payload do JWT com segurança
+    const payloadPart = token.split(".")[1];
+    const decodedPayload = JSON.parse(atob(payloadPart));
+
+    // O backend precisa realmente enviar "id" no JWT!
+    const userId = decodedPayload.id ?? decodedPayload.userId ?? decodedPayload.sub;
+
+    if (!userId) {
+      console.warn("⚠ Token recebido, mas sem userId dentro do JWT.");
+    }
+
+    // Salva o token e ID no localStorage
+    localStorage.setItem("user-token", token);
+    if (userId) localStorage.setItem("user-id", userId);
+
+    router.push("/userDashboard");
+  } catch (err) {
+    console.error("Erro no login:", err);
+    alert("Email ou senha incorretos!");
+  }
 }
 </script>

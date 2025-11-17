@@ -6,3 +6,12 @@ export const registerIfApi = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// ADICIONE ISSO:
+registerIfApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("user-token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
