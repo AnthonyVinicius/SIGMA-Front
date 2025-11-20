@@ -5,4 +5,13 @@ export const sigmaApi = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: false,
+});
+
+sigmaApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("user-token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
