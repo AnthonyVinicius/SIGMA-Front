@@ -1,41 +1,57 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import UserDAO from "../services/UserDAO";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const user = ref({
     name: "",
     email: "",
-    registration: "",
+    registration: null,
+    phone: "",
     password: "",
     role: "OTHER",
 });
+
 
 const limparForms = () => {
     user.value = {
         name: "",
         email: "",
+        registration: "",
         phone: "",
         password: "",
         role: "OTHER",
     };
 }
 
+const formatPhone = (value) => {
+    value = value.replace(/\D/g, "");
+    if (value.length > 2) value = `(${value.slice(0, 2)})${value.slice(2, 7)}${value.length > 7 ? '-' + value.slice(7, 11) : ''}`;
+    return value;
+};
+
+
 
 const submitForm = async () => {
     try {
         await UserDAO.insert(user.value);
         alert("Usuário cadastrado com sucesso!");
-        limparForms()
-        push('/login')
+        router.push("/login");
     } catch (err) {
         console.error(err);
         alert("Erro ao cadastrar usuário: " + err.message);
     }
 };
+
+
+onMounted(async () => {
+    console.log(await UserDAO.getAll())
+});
 </script>
 
 <template>
-    <<div class="flex items-center justify-center min-h-screen">
+    <div class="flex items-center justify-center min-h-screen">
 
         <form @submit.prevent="submitForm" class="w-full max-w-md p-8 space-y-1 bg-[#1c5e27] rounded-2xl shadow-lg">
             <div class="text-center">
@@ -57,11 +73,16 @@ const submitForm = async () => {
                     class="w-full bg-white border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 p-2"
                     required />
             </div>
+
             <div>
                 <label class="block text-sm font-medium text-white mb-1">Telefone</label>
-                <input v-model="user.phone" type="number" maxlength="100"
+                <input
+                    :value="user.phone"
+                    @input="user.phone = formatPhone($event.target.value)"
+                    type="text"
                     class="w-full bg-white border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 p-2"
-                    required />
+                    required
+                />
             </div>
 
             <div>
@@ -85,12 +106,11 @@ const submitForm = async () => {
                 </router-link>
             </div>
 
-
             <button type="submit"
                 class="w-full px-4 py-3 font-semibold text-green-700 bg-white rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 transition-colors">
                 Registrar-se
             </button>
         </form>
 
-        </div>
+    </div>
 </template>
