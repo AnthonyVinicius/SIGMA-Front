@@ -4,11 +4,18 @@ import { QrCode, Camera, MapPin } from "lucide-vue-next";
 import { useQrScanner } from "../composables/useQrScanner";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const environments = ref([]);
 const selectedEnvironment = ref(null);
 const components = ref([]);
 const currentUserId = "222cfd43-b324-4050-8e13-8878c6485770";
+
+
+const voltar = () => {
+    router.back();
+};
 
 const ticket = ref({
   description: "",
@@ -206,18 +213,12 @@ onBeforeUnmount(stop);
       </div>
     </div>
 
-    <router-link to="/login">
-      <button
+    
+      <button @click="voltar"
         class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm absolute bottom-6 right-6">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-lock">
-          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-        Fazer Login
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Voltar
       </button>
-    </router-link>
   </div>
 </template>
 

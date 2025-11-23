@@ -7,7 +7,6 @@ export const registerIfApi = axios.create({
   },
 });
 
-// ADICIONE ISSO:
 registerIfApi.interceptors.request.use((config) => {
   const token = localStorage.getItem("user-token");
   if (token) {

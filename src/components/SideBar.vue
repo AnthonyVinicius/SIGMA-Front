@@ -7,18 +7,8 @@
   >
     <div :class="['flex items-center gap-x-3', isExpanded ? '' : 'justify-center']">
       <div class="bg-[#1C5E27] text-white p-2 rounded-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-qr-code"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-qr-code">
           <rect width="5" height="5" x="3" y="3" rx="1" />
           <rect width="5" height="5" x="16" y="3" rx="1" />
           <rect width="5" height="5" x="3" y="16" rx="1" />
@@ -33,12 +23,7 @@
           <path d="M12 21v-1" />
         </svg>
       </div>
-      <span
-        v-show="isExpanded"
-        class="text-xl font-bold text-gray-800 transition-opacity duration-200 whitespace-nowrap"
-      >
-        Chamados
-      </span>
+      <span v-show="isExpanded" class="text-xl font-bold text-gray-800 whitespace-nowrap">Chamados</span>
     </div>
 
     <div class="mt-10 flex flex-1 flex-col justify-between">
@@ -48,57 +33,38 @@
           :key="item.label"
           :to="item.to"
           :title="!isExpanded ? item.label : ''"
-          :class="[
-            'flex transform items-center rounded-lg px-3 py-3 text-gray-600 transition-colors duration-300 hover:bg-[#1C5E27] hover:text-white',
-            isExpanded ? '' : 'justify-center'
-          ]"
+          :class="['flex items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-[#1C5E27] hover:text-white transition-colors',
+                   isExpanded ? '' : 'justify-center']"
         >
           <component :is="item.icon" class="h-6 w-6" />
-          <span
-            v-show="isExpanded"
-            class="mx-4 text-base font-medium whitespace-nowrap"
-          >
-            {{ item.label }}
-          </span>
+          <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">{{ item.label }}</span>
         </router-link>
       </nav>
 
       <div class="mt-6 border-t pt-4">
-        <div :class="['flex w-full items-center', isExpanded ? 'gap-x-3' : 'justify-center']">
+        <div :class="['flex items-center', isExpanded ? 'gap-x-3' : 'justify-center']">
           <button
             @click="logout"
             :title="!isExpanded ? 'Sair' : ''"
-            class="flex w-full transform items-center rounded-lg px-3 py-3 text-gray-600 transition-colors duration-300 hover:bg-red-600 hover:text-white"
+            class="flex w-full items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-red-600 hover:text-white transition-colors"
             :class="isExpanded ? '' : 'justify-center'"
           >
             <LogOut class="h-6 w-6" />
-            <span
-              v-show="isExpanded"
-              class="mx-4 text-base font-medium whitespace-nowrap"
-            >
-              Sair
-            </span>
+            <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">Sair</span>
           </button>
         </div>
 
-        <div
-          v-show="isExpanded"
-          class="flex flex-col gap-3 mt-4 border-t pt-4"
-        >
-          <div class="transition-opacity duration-200">
-            <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">
-              {{ usuario.nome }}
-            </h1>
-            <p class="text-sm text-gray-500">
-              {{ userAdm ? 'Administrador' : 'Aluno' }}
-            </p>
+        <div v-show="isExpanded" class="flex flex-col gap-3 mt-4 border-t pt-4">
+          <div>
+            <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">{{ usuario.nome }}</h1>
+            <p class="text-sm text-gray-500">{{ userAdm ? 'Administrador' : 'Aluno' }}</p>
           </div>
 
           <div class="flex items-center gap-3 mt-2">
             <span class="text-sm text-gray-600 font-medium">Modo:</span>
             <button
               @click="toggleUserType"
-              class="bg-[#1C5E27] hover:bg-[#174a20] text-white text-sm font-semibold px-3 py-1 rounded-md transition-all"
+              class="bg-[#1C5E27] hover:bg-[#174a20] text-white text-sm font-semibold px-3 py-1 rounded-md transition"
             >
               {{ userAdm ? 'Trocar para Aluno' : 'Trocar para Admin' }}
             </button>
@@ -110,22 +76,13 @@
 </template>
 
 <script setup>
-import { shallowRef, reactive, computed, ref } from 'vue'
-import {
-  ClipboardList,
-  ShieldUser,
-  LogOut,
-  QrCode,
-  MapPin,
-  TextAlignJustify
-} from 'lucide-vue-next'
+import { shallowRef, reactive, computed, ref, onMounted } from 'vue'
+import { ClipboardList, ShieldUser, LogOut, QrCode, MapPin, TextAlignJustify } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import axios from "axios"
 
 defineProps({
-  isExpanded: {
-    type: Boolean,
-    required: true
-  }
+  isExpanded: { type: Boolean, required: true }
 })
 
 const router = useRouter()
@@ -146,7 +103,23 @@ const menuItemsAdmin = shallowRef([
 const currentMenu = computed(() => (userAdm.value ? menuItemsAdmin.value : menuItemsUser.value))
 
 const usuario = reactive({
-  nome: 'Ericlecio'
+  nome: "Carregando..."
+})
+
+onMounted(async () => {
+  const id = localStorage.getItem("user-id")
+  if (!id) {
+    usuario.nome = "Usuário"
+    return
+  }
+
+  try {
+    const response = await axios.get(`http://132.226.159.21:8080/api/v1/registerif/user/${id}`)
+    usuario.nome = response.data.name
+  } catch (err) {
+    console.error("Erro ao buscar usuário:", err)
+    usuario.nome = "Usuário"
+  }
 })
 
 function toggleUserType() {
@@ -154,6 +127,8 @@ function toggleUserType() {
 }
 
 function logout() {
+  localStorage.removeItem("user-token")
+  localStorage.removeItem("user-id")
   router.push('/login')
 }
 </script>
@@ -163,9 +138,8 @@ function logout() {
   background-color: #1c5e27;
   color: white;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
+              0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
-
 .router-link-exact-active:hover {
   background-color: #154b1f;
   color: white;
