@@ -10,6 +10,18 @@ import TicketsDAO from '../services/TicketsDAO'
 
 const recentCalls = ref([])
 
+const problemTypes = ["HARDWARE", "SOFTWARE", "NETWORK", "OTHER"];
+const problemTypeTranslations = {
+  HARDWARE: 'Hardware',
+  SOFTWARE: 'Software',
+  NETWORK: 'Rede',
+  OTHER: 'Outro'
+};
+
+function translateProblemType(type) {
+  return problemTypeTranslations[type] || type;
+}
+
 const COLORS = {
   status: ["#3b82f6", "#f97316", "#10b981", "#14b8a6", "#6b7280"],
   priority: ["#ef4444", "#f59e0b", "#10b981"],
@@ -51,9 +63,37 @@ const chamadosPorLocal = computed(() => gerarGrafico("location", COLORS.location
 
 async function loadTickets() {
   try {
-    recentCalls.value = await TicketsDAO.getAll()
+    const data = await TicketsDAO.getAll()
+    recentCalls.value = data.map(c => ({
+      ...c,
+      showDropdown: false,
+      showTypeDropdown: false
+    }));
   } catch (error) {
     console.error(error)
+  }
+}
+
+async function atualizarTipoProblema(id, novoTipo) {
+  try {
+    const chamado = recentCalls.value.find(c => c.id === id)
+    if (!chamado) return
+
+    const payload = {
+      description: chamado.description,
+      status: chamado.status,
+      priority: chamado.priority,
+      problemType: novoTipo,
+      component: chamado.component?.id,
+      environment: chamado.environment?.id,
+      createdById: chamado.createdBy?.id,
+      ticketFile: []
+    }
+    
+    await TicketsDAO.update(id, payload);
+    chamado.problemType = novoTipo
+  } catch (error) {
+    console.error("Erro ao atualizar tipo de problema:", error)
   }
 }
 
@@ -70,6 +110,13 @@ async function atualizarStatus(id, novoStatus) {
 function toggleDropdown(chamado) {
   recentCalls.value.forEach(c => (c.showDropdown = false))
   chamado.showDropdown = !chamado.showDropdown
+  chamado.showTypeDropdown = false;
+}
+
+function toggleTypeDropdown(chamado) {
+  recentCalls.value.forEach(c => c.showTypeDropdown = false);
+  chamado.showTypeDropdown = !chamado.showTypeDropdown;
+  chamado.showDropdown = false;
 }
 
 function formatarData(isoString) {
@@ -162,6 +209,39 @@ onMounted(async () => {
             <template #priority>{{ chamado.priority }}</template>
             <template #counter>{{ chamado.counter }}</template>
             <template #date>{{ formatarData(chamado.createdAt) }}</template>
+
+            <template #problemType>
+              {{ translateProblemType(chamado.problemType) }}
+            </template>
+
+            <template #problemTypeControl>
+              <div class="relative inline-block text-left w-40">
+                <button @click="toggleTypeDropdown(chamado)"
+                  class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
+                  :class="{
+                    'bg-purple-100 text-purple-700 border-purple-300': chamado.problemType === 'HARDWARE',
+                    'bg-indigo-100 text-indigo-700 border-indigo-300': chamado.problemType === 'SOFTWARE',
+                    'bg-cyan-100 text-cyan-700 border-cyan-300': chamado.problemType === 'NETWORK',
+                    'bg-orange-100 text-orange-700 border-orange-300': chamado.problemType === 'OTHER'
+                  }">
+                  {{ translateProblemType(chamado.problemType) }}
+                  <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div v-show="chamado.showTypeDropdown" class="absolute right-0 mt-1 w-full bg-white border rounded-md shadow-lg z-10">
+                  <ul>
+                    <li v-for="type in problemTypes" :key="type"
+                      @click="atualizarTipoProblema(chamado.id, type); chamado.showTypeDropdown = false"
+                      class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition">
+                      {{ translateProblemType(type) }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </template>
 
             <div class="relative inline-block text-left w-40">
               <button @click="toggleDropdown(chamado)"

@@ -18,6 +18,40 @@
           <template #counter>{{ chamado.counter }}</template>
           <template #date>{{ formatarData(chamado.createdAt) }}</template>
 
+          <template #problemType>
+            {{ translateProblemType(chamado.problemType) }}
+          </template>
+
+          <template #problemTypeControl>
+            <div class="relative inline-block text-left w-40">
+              <button @click="toggleTypeDropdown(chamado)"
+                class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
+                :class="{
+                  'bg-purple-100 text-purple-700 border-purple-300': chamado.problemType === 'HARDWARE',
+                  'bg-indigo-100 text-indigo-700 border-indigo-300': chamado.problemType === 'SOFTWARE',
+                  'bg-cyan-100 text-cyan-700 border-cyan-300': chamado.problemType === 'NETWORK',
+                  'bg-orange-100 text-orange-700 border-orange-300': chamado.problemType === 'OTHER'
+                }">
+                {{ translateProblemType(chamado.problemType) }}
+                <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <div v-show="chamado.showTypeDropdown"
+                class="absolute right-0 mt-1 w-full bg-white border rounded-md shadow-lg z-10 overflow-hidden">
+                <ul class="w-full">
+                  <li v-for="type in problemTypes" :key="type"
+                    @click="atualizarTipoProblema(chamado, type); chamado.showTypeDropdown = false"
+                    class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 truncate">
+                    {{ translateProblemType(type) }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </template>
+          
           <template #status>
             <div class="relative inline-block text-left w-40">
               <button @click="toggleDropdown(chamado)"
@@ -62,11 +96,50 @@ import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
 
 const calls = ref([])
 
+const problemTypes = ["HARDWARE", "SOFTWARE", "NETWORK", "OTHER"];
+const problemTypeTranslations = {
+  HARDWARE: 'Hardware',
+  SOFTWARE: 'Software',
+  NETWORK: 'Rede',
+  OTHER: 'Outro'
+};
+
 async function loadTickets() {
   try {
-    calls.value = await TicketsDAO.getAll()
+    const data = await TicketsDAO.getAll();
+    calls.value = data.map(c => ({ 
+      ...c, 
+      showDropdown: false,
+      showTypeDropdown: false
+    }));
   } catch (error) {
     console.error('Error loading tickets:', error)
+  }
+}
+
+function translateProblemType(type) {
+  return problemTypeTranslations[type] || type;
+}
+
+async function atualizarTipoProblema(chamado, novoTipo) {
+  try {
+    const payload = {
+      description: chamado.description,
+      status: chamado.status,
+      priority: chamado.priority,
+      problemType: novoTipo,
+      componentId: chamado.component?.id,
+      environmentId: chamado.environment?.id,
+      createdById: chamado.createdBy?.id,
+      ticketFile: []
+    };
+
+    await TicketsDAO.update(chamado.id, payload);
+    chamado.problemType = novoTipo;
+    alert(`Tipo de problema atualizado para ${translateProblemType(novoTipo)}!`);
+  } catch (error) {
+    console.error('Error updating problem type:', error);
+    alert('Erro ao atualizar tipo de problema.');
   }
 }
 
@@ -91,10 +164,16 @@ async function atualizarStatus(chamado, novoStatus) {
   }
 }
 
+function toggleTypeDropdown(chamado) {
+  calls.value.forEach(c => c.showTypeDropdown = false);
+  chamado.showTypeDropdown = !chamado.showTypeDropdown;
+  chamado.showDropdown = false;
+}
 
 function toggleDropdown(chamado) {
-  calls.value.forEach(c => (c.showDropdown = false))
-  chamado.showDropdown = !chamado.showDropdown
+  calls.value.forEach(c => (c.showDropdown = false));
+  chamado.showDropdown = !chamado.showDropdown;
+  chamado.showTypeDropdown = false;
 }
 
 function formatarData(isoString) {

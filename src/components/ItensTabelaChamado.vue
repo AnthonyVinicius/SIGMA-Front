@@ -1,5 +1,5 @@
 <script setup>
-import { Calendar, Wrench, Flag } from 'lucide-vue-next'
+import { Calendar, Wrench, Flag, Code } from 'lucide-vue-next'
 </script>
 
 <template>
@@ -24,6 +24,13 @@ import { Calendar, Wrench, Flag } from 'lucide-vue-next'
           •
           <slot name="location" />
         </span>
+
+        <div class="flex items-center gap-2" title="Tipo de Problema">
+          <Code class="w-5 h-5 text-purple-600" />
+          <span class="font-medium">
+            <slot name="problemType" /> 
+          </span>
+        </div>
 
         <div class="flex items-center gap-2" title="Prioridade">
           <Wrench class="w-5 h-5 text-blue-600" />
