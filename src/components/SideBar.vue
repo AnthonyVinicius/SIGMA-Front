@@ -57,7 +57,6 @@
         <div v-show="isExpanded" class="flex flex-col gap-3 mt-4 border-t pt-4">
           <div>
             <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">{{ usuario.nome }}</h1>
-            <p class="text-sm text-gray-500">{{ userAdm ? 'Administrador' : 'Aluno' }}</p>
           </div>
 
           <div class="flex items-center gap-3 mt-2">
@@ -87,7 +86,7 @@ defineProps({
 
 const router = useRouter()
 
-const userAdm = ref(true)
+const userAdm = ref(false)
 
 const menuItemsUser = shallowRef([
   { to: '/reportar', label: 'Reportar', icon: QrCode },

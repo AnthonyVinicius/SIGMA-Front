@@ -4,18 +4,12 @@ import { QrCode, Camera, MapPin } from "lucide-vue-next";
 import { useQrScanner } from "../composables/useQrScanner";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
 const environments = ref([]);
 const selectedEnvironment = ref(null);
 const components = ref([]);
-const currentUserId = "222cfd43-b324-4050-8e13-8878c6485770";
 
-
-const voltar = () => {
-    router.back();
-};
+const currentUserId = "5f1b2f29-83fa-49de-9f4f-1fa4775af776";
 
 const ticket = ref({
   description: "",
@@ -144,13 +138,11 @@ onBeforeUnmount(stop);
               Acesso Rápido
             </h2>
 
-            <div class="max-h-60 overflow-y-auto rounded-md border border-gray-200">
-              <div v-for="(env, i) in environments" :key="env.id || i" @click="selectEnvironment(env)"
-                class="flex cursor-pointer items-center gap-4 bg-gray-100 p-3 border-b border-gray-200 transition-colors hover:bg-gray-200">
-                <MapPin class="h-6 w-6 text-gray-600" />
-                <div>
-                  <p class="font-bold text-gray-800">{{ env.name }}</p>
-                </div>
+            <div v-for="(env, i) in environments.slice(0, 5)" :key="env.id || i" @click="selectEnvironment(env)"
+              class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200">
+              <MapPin class="h-6 w-6 text-gray-600" />
+              <div>
+                <p class="font-bold text-gray-800">{{ env.name }}</p>
               </div>
             </div>
           </div>
@@ -213,12 +205,18 @@ onBeforeUnmount(stop);
       </div>
     </div>
 
-    
-      <button @click="voltar"
+    <router-link to="/login">
+      <button
         class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm absolute bottom-6 right-6">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-        Voltar
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-lock">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        Fazer Login
       </button>
+    </router-link>
   </div>
 </template>
 
@@ -236,18 +234,5 @@ onBeforeUnmount(stop);
 
 #qr-reader__dashboard_section_swaplink {
   color: #1C5E27 !important;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #1C5E27;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
 }
 </style>
