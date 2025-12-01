@@ -89,8 +89,8 @@ const router = useRouter()
 const userAdm = ref(false)
 
 const menuItemsUser = shallowRef([
+  { to: '/userDashboard', label: 'Dashboard', icon: ClipboardList },
   { to: '/reportar', label: 'Reportar', icon: QrCode },
-  { to: '/userDashboard', label: 'Dashboard', icon: ClipboardList }
 ])
 
 const menuItemsAdmin = shallowRef([
