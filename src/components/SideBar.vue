@@ -1,10 +1,8 @@
 <template>
-  <aside
-    :class="[
-      'flex h-screen flex-col overflow-y-auto border-r bg-white transition-all duration-300',
-      isExpanded ? 'w-64 px-5 py-8' : 'w-20 items-center py-8 px-2'
-    ]"
-  >
+  <aside :class="[
+    'flex h-screen flex-col overflow-y-auto border-r bg-white transition-all duration-300',
+    isExpanded ? 'w-64 px-5 py-8' : 'w-20 items-center py-8 px-2'
+  ]">
     <div :class="['flex items-center gap-x-3', isExpanded ? '' : 'justify-center']">
       <div class="bg-[#1C5E27] text-white p-2 rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
@@ -28,14 +26,11 @@
 
     <div class="mt-10 flex flex-1 flex-col justify-between">
       <nav :class="['-mx-3 space-y-3', isExpanded ? '' : 'flex flex-col items-center']">
-        <router-link
-          v-for="item in currentMenu"
-          :key="item.label"
-          :to="item.to"
-          :title="!isExpanded ? item.label : ''"
-          :class="['flex items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-[#1C5E27] hover:text-white transition-colors',
-                   isExpanded ? '' : 'justify-center']"
-        >
+        <router-link v-for="item in currentMenu" :key="item.label" :to="item.to" :title="!isExpanded ? item.label : ''"
+          :class="[
+            'flex items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-[#1C5E27] hover:text-white transition-colors',
+            isExpanded ? '' : 'justify-center'
+          ]">
           <component :is="item.icon" class="h-6 w-6" />
           <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">{{ item.label }}</span>
         </router-link>
@@ -43,94 +38,61 @@
 
       <div class="mt-6 border-t pt-4">
         <div :class="['flex items-center', isExpanded ? 'gap-x-3' : 'justify-center']">
-          <button
-            @click="logout"
-            :title="!isExpanded ? 'Sair' : ''"
+          <button @click="logout" :title="!isExpanded ? 'Sair' : ''"
             class="flex w-full items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-red-600 hover:text-white transition-colors"
-            :class="isExpanded ? '' : 'justify-center'"
-          >
+            :class="isExpanded ? '' : 'justify-center'">
             <LogOut class="h-6 w-6" />
             <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">Sair</span>
           </button>
         </div>
 
         <div v-show="isExpanded" class="flex flex-col gap-3 mt-4 border-t pt-4">
-          <div>
-            <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">{{ usuario.nome }}</h1>
-          </div>
-
-          <div class="flex items-center gap-3 mt-2">
-            <span class="text-sm text-gray-600 font-medium">Modo:</span>
-            <button
-              @click="toggleUserType"
-              class="bg-[#1C5E27] hover:bg-[#174a20] text-white text-sm font-semibold px-3 py-1 rounded-md transition"
-            >
-              {{ userAdm ? 'Trocar para Aluno' : 'Trocar para Admin' }}
-            </button>
-          </div>
+          <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">{{ usuarioNome }}</h1>
         </div>
       </div>
     </div>
   </aside>
 </template>
 
+
 <script setup>
-import { shallowRef, reactive, computed, ref, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useUserStore } from '../stores/user'
 import { ClipboardList, ShieldUser, LogOut, QrCode, MapPin, TextAlignJustify } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
-import axios from "axios"
 
 defineProps({
   isExpanded: { type: Boolean, required: true }
 })
 
 const router = useRouter()
+const userStore = useUserStore()
 
-const userAdm = ref(false)
-
-const menuItemsUser = shallowRef([
+const menuItemsUser = [
   { to: '/userDashboard', label: 'Dashboard', icon: ClipboardList },
   { to: '/reportar', label: 'Reportar', icon: QrCode },
-])
+]
 
-const menuItemsAdmin = shallowRef([
+const menuItemsAdmin = [
   { to: '/adminDashboard', label: 'Dashboard', icon: ShieldUser },
   { to: '/allReports', label: 'Chamados', icon: TextAlignJustify },
   { to: '/manageLocals', label: 'Gerenciar Locais', icon: MapPin }
-])
+]
 
-const currentMenu = computed(() => (userAdm.value ? menuItemsAdmin.value : menuItemsUser.value))
-
-const usuario = reactive({
-  nome: "Carregando..."
+const currentMenu = computed(() => {
+  return userStore.role === "ADMIN"
+    ? menuItemsAdmin
+    : menuItemsUser
 })
 
-onMounted(async () => {
-  const id = localStorage.getItem("user-id")
-  if (!id) {
-    usuario.nome = "Usuário"
-    return
-  }
-
-  try {
-    const response = await axios.get(`http://132.226.159.21:8080/api/v1/registerif/user/${id}`)
-    usuario.nome = response.data.name
-  } catch (err) {
-    console.error("Erro ao buscar usuário:", err)
-    usuario.nome = "Usuário"
-  }
-})
-
-function toggleUserType() {
-  userAdm.value = !userAdm.value
-}
+const usuarioNome = computed(() => userStore.name ?? "Usuário")
 
 function logout() {
-  localStorage.removeItem("user-token")
-  localStorage.removeItem("user-id")
+  userStore.logout()
   router.push('/login')
 }
 </script>
+
 
 <style scoped>
 .router-link-exact-active {

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import BaseButton from "../components/BaseButton.vue";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
+import { useUserStore } from "../stores/user";
 
 const route = useRoute();
 const router = useRouter();
@@ -16,16 +17,16 @@ const loading = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
 
-const currentUserId = "5f1b2f29-83fa-49de-9f4f-1fa4775af776";
+const userStore = useUserStore();
 
-const form = ref({
+const ticket = ref({
   description: "",
-  priority: "MEDIUM",
+  priority: "LOW",
   problemType: "HARDWARE",
-  status: "OPEN",
-  environmentId: environmentId.value,
   componentId: "",
-  createdById: currentUserId
+  environmentId: "",
+  status: "OPEN",
+  createdById: userStore.id,
 });
 
 async function loadEnvironment() {

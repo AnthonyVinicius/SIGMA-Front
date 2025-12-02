@@ -5,13 +5,16 @@ import { useQrScanner } from "../composables/useQrScanner";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
 import { useRouter } from "vue-router";
+import { useUserStore } from "../stores/user";
+
 const router = useRouter();
 
 const environments = ref([]);
 const selectedEnvironment = ref(null);
 const components = ref([]);
 
-const currentUserId = "5f1b2f29-83fa-49de-9f4f-1fa4775af776";
+
+const userStore = useUserStore();
 
 const ticket = ref({
   description: "",
@@ -20,7 +23,7 @@ const ticket = ref({
   componentId: "",
   environmentId: "",
   status: "OPEN",
-  createdById: currentUserId,
+  createdById: userStore.id,
 });
 
 const isReporting = ref(false);
