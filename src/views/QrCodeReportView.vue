@@ -1,21 +1,59 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { QrCode, Camera, MapPin } from "lucide-vue-next";
+import {
+  QrCode,
+  Camera,
+  MapPin,
+  Paperclip,
+  X,
+  FileText,
+} from "lucide-vue-next";
 import { useQrScanner } from "../composables/useQrScanner";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "../stores/user";
-import { useRoute } from "vue-router";
+
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
 
 const environments = ref([]);
 const selectedEnvironment = ref(null);
 const components = ref([]);
 
+const fileInput = ref(null);
+const selectedFiles = ref([]);
 
-const userStore = useUserStore();
+function triggerFileInput() {
+  fileInput.value.click();
+}
+
+function handleFileUpload(event) {
+  const files = Array.from(event.target.files);
+
+  files.forEach((file) => {
+    const preview = file.type.startsWith("image/")
+      ? URL.createObjectURL(file)
+      : null;
+
+    selectedFiles.value.push({
+      file: file,
+      name: file.name,
+      preview: preview,
+      size: (file.size / 1024).toFixed(1) + " KB",
+    });
+  });
+
+  event.target.value = null;
+}
+
+function removeFile(index) {
+  if (selectedFiles.value[index].preview) {
+    URL.revokeObjectURL(selectedFiles.value[index].preview);
+  }
+  selectedFiles.value.splice(index, 1);
+}
 
 const ticket = ref({
   description: "",
@@ -41,28 +79,23 @@ async function loadEnvironments() {
 async function onScanSuccess(decodedText) {
   await stop();
   try {
-
     let envId = decodedText;
-
     if (decodedText.startsWith("http")) {
       const url = new URL(decodedText);
       envId = url.searchParams.get("env");
     }
-
     const env = await EnviromentalDAO.getById(envId);
-
     selectedEnvironment.value = { id: env.id, name: env.name };
     components.value = env.components || [];
     ticket.value.environmentId = env.id;
     isReporting.value = true;
-
   } catch {
     alert("Ambiente não encontrado.");
   }
 }
 
-
 function onScanFailure() {}
+
 function stopScanner() {
   stop();
   resetForm();
@@ -85,6 +118,8 @@ async function submitTicket() {
 
   isSubmitting.value = true;
   try {
+    const filesToSend = selectedFiles.value.map((f) => f.file);
+
     const payload = {
       description: ticket.value.description,
       status: ticket.value.status,
@@ -93,7 +128,9 @@ async function submitTicket() {
       component: ticket.value.componentId,
       environment: ticket.value.environmentId,
       createdBy: ticket.value.createdById,
-      ticketFile: [],
+
+      /* QUANDO O BACKEND ESTIVER PRONTO, DESCOMENTE A LINHA ABAIXO */
+      // ticketFile: filesToSend,
     };
 
     await TicketsDAO.insert(payload);
@@ -111,6 +148,12 @@ function resetForm() {
   isReporting.value = false;
   selectedEnvironment.value = null;
   components.value = [];
+
+  selectedFiles.value.forEach((f) => {
+    if (f.preview) URL.revokeObjectURL(f.preview);
+  });
+  selectedFiles.value = [];
+
   ticket.value = {
     description: "",
     priority: "LOW",
@@ -121,6 +164,7 @@ function resetForm() {
     createdById: userStore.id,
   };
 }
+
 async function autoSelectEnvironment(envId) {
   try {
     const env = await EnviromentalDAO.getById(envId);
@@ -133,12 +177,9 @@ async function autoSelectEnvironment(envId) {
   }
 }
 
-
 onMounted(async () => {
   await loadEnvironments();
-
   const envId = route.query.env;
-
   if (envId) {
     await autoSelectEnvironment(envId);
   }
@@ -179,7 +220,6 @@ onBeforeUnmount(stop);
             <h2 class="text-sm font-semibold uppercase text-gray-500">
               Acesso Rápido
             </h2>
-
             <div
               v-for="(env, i) in environments.slice(0, 5)"
               :key="env.id || i"
@@ -257,9 +297,66 @@ onBeforeUnmount(stop);
                 {{ comp.description }}
               </option>
             </select>
+
+            <div class="w-full text-left mt-2">
+              <input
+                type="file"
+                ref="fileInput"
+                multiple
+                accept="image/*,.pdf"
+                class="hidden"
+                @change="handleFileUpload"
+              />
+
+              <button
+                @click="triggerFileInput"
+                type="button"
+                class="flex items-center gap-2 text-sm text-[#1C5E27] font-semibold hover:underline px-1 py-2"
+              >
+                <Paperclip class="h-4 w-4" />
+                Anexar imagem ou arquivo
+              </button>
+
+              <div
+                v-if="selectedFiles.length > 0"
+                class="flex flex-col gap-2 mt-2"
+              >
+                <div
+                  v-for="(item, index) in selectedFiles"
+                  :key="index"
+                  class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-2 text-left"
+                >
+                  <div class="flex items-center gap-3 overflow-hidden">
+                    <img
+                      v-if="item.preview"
+                      :src="item.preview"
+                      alt="Preview"
+                      class="h-10 w-10 object-cover rounded-md border border-gray-300"
+                    />
+                    <FileText v-else class="h-8 w-8 text-gray-400" />
+
+                    <div class="truncate">
+                      <p
+                        class="text-xs font-medium text-gray-700 truncate max-w-[150px]"
+                      >
+                        {{ item.name }}
+                      </p>
+                      <p class="text-[10px] text-gray-400">{{ item.size }}</p>
+                    </div>
+                  </div>
+
+                  <button
+                    @click="removeFile(index)"
+                    class="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    <X class="h-4 w-4 text-gray-500" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="flex gap-4">
+          <div class="flex gap-4 mt-2">
             <button
               @click="submitTicket"
               :disabled="isSubmitting"
@@ -267,7 +364,6 @@ onBeforeUnmount(stop);
             >
               {{ isSubmitting ? "Enviando..." : "Enviar Chamado" }}
             </button>
-
             <button
               @click="resetForm"
               class="bg-gray-500 text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-gray-600 transition-colors text-sm"
@@ -299,7 +395,6 @@ onBeforeUnmount(stop);
           d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z"
         />
       </svg>
-
       Voltar
     </button>
   </div>
@@ -311,12 +406,10 @@ onBeforeUnmount(stop);
   border-radius: 8px;
   overflow: hidden;
 }
-
 #qr-reader video {
   width: 100% !important;
   height: auto !important;
 }
-
 #qr-reader__dashboard_section_swaplink {
   color: #1c5e27 !important;
 }
