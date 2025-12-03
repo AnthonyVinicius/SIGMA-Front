@@ -1,13 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import BaseButton from "../components/BaseButton.vue";
 import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
 import { useUserStore } from "../stores/user";
 
 const route = useRoute();
-const router = useRouter();
 
 const environmentId = ref(route.query.environmentId || null);
 const environment = ref(null);

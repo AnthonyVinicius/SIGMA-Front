@@ -79,8 +79,13 @@ async function handleLogin() {
       name: session.name,
       role: session.role
     });
+    
+    if (session.role === "ADMIN") {
+      router.push("/adminDashboard");
+    } else {
+      router.push("/userDashboard");
+    }
 
-    router.push("/userDashboard");
   } catch (err) {
     console.error(err);
     alert("Email ou senha incorretos!");
