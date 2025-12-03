@@ -54,7 +54,6 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { AuthService } from "../services/AuthService";
-import { decodeJWT } from "../utils/jwt";
 import { useUserStore } from "../stores/user";
 
 const router = useRouter();
@@ -73,17 +72,20 @@ async function handleLogin() {
   loading.value = true;
 
   try {
-    const response = await AuthService.login(email.value, password.value);
-    const token = response.data;
+    const session = await AuthService.login(email.value, password.value);
 
-    const payload = decodeJWT(token);
-    if (!payload) throw new Error("Token inválido");
+    userStore.setSession(session.token, session.userId);
+    userStore.setUserData({
+      name: session.name,
+      role: session.role
+    });
+    
+    if (session.role === "ADMIN") {
+      router.push("/adminDashboard");
+    } else {
+      router.push("/userDashboard");
+    }
 
-    const userId = payload.id ?? payload.userId ?? payload.sub;
-
-    userStore.setSession(token, userId);
-
-    router.push("/userDashboard");
   } catch (err) {
     console.error(err);
     alert("Email ou senha incorretos!");
@@ -92,3 +94,4 @@ async function handleLogin() {
   }
 }
 </script>
+

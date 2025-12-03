@@ -11,12 +11,14 @@ import TicketsDAO from '../services/TicketsDAO'
 const recentCalls = ref([])
 
 async function loadTickets() {
-  try {
-    recentCalls.value = await TicketsDAO.myTickets();
-  } catch (error) {
-    console.error(error);
-  }
+    try {
+        const response = await TicketsDAO.myTickets();
+        recentCalls.value = response.data;
+    } catch (error) {
+        console.error(error);
+    }
 }
+
 
 function formatarData(isoString) {
     if (!isoString) return ''
@@ -139,9 +141,9 @@ onMounted(async () => {
 
                 <div class="flex flex-col gap-3">
                     <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i">
-                        <template #title>{{ chamado.component.description }}</template>
+                        <template #title>{{ chamado.component?.description }}</template>
                         <template #description>{{ chamado.description }}</template>
-                        <template #location>{{ chamado.environment.name }}</template>
+                        <template #location>{{ chamado.environment?.name }}</template>
                         <template #priority>{{ chamado.priority }}</template>
                         <template #counter>{{ chamado.counter }}</template>
                         <template #date>{{ formatarData(chamado.createdAt) }}</template>
@@ -158,6 +160,7 @@ onMounted(async () => {
                             </span>
                         </template>
                     </ItensTabelaChamado>
+
 
                     <div v-if="recentCalls.length === 0" class="text-center text-gray-500 py-6">
                         Nenhum chamado encontrado.

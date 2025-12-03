@@ -45,11 +45,13 @@ import ItensTabelaChamado from "../components/ItensTabelaChamado.vue";
 
 const calls = ref([]);
 
+
 async function loadTickets() {
   try {
-    calls.value = await TicketsDAO.myTickets();
+    const response = await TicketsDAO.myTickets();
+    calls.value = response.data;
   } catch (error) {
-    console.error("Error loading tickets:", error);
+    console.error(error);
   }
 }
 
