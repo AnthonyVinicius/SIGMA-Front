@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, computed } from 'vue';
 import QRCode from 'qrcode';
 
 const props = defineProps({
@@ -51,6 +51,10 @@ const emit = defineEmits(['close']);
 
 const qrcodeCanvas = ref(null);
 
+const qrValue = computed(() => {
+    return `${window.location.origin}/reportar?env=${props.localId}`;
+});
+
 watch(() => props.isOpen, async (isOpen) => {
     if (isOpen && props.localId) {
         await nextTick();
@@ -62,7 +66,7 @@ async function generateQRCode() {
     if (!qrcodeCanvas.value) return;
 
     try {
-        await QRCode.toCanvas(qrcodeCanvas.value, props.localId, {
+        await QRCode.toCanvas(qrcodeCanvas.value, qrValue.value, {
             width: 256,
             margin: 2,
             color: {
@@ -88,3 +92,4 @@ function downloadQRCode() {
     link.click();
 }
 </script>
+

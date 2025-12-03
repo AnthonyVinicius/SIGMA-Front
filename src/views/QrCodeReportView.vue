@@ -6,7 +6,8 @@ import EnviromentalDAO from "../services/EnviromentalDAO";
 import TicketsDAO from "../services/TicketsDAO";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/user";
-
+import { useRoute } from "vue-router";
+const route = useRoute();
 const router = useRouter();
 
 const environments = ref([]);
@@ -40,15 +41,26 @@ async function loadEnvironments() {
 async function onScanSuccess(decodedText) {
   await stop();
   try {
-    const env = await EnviromentalDAO.getById(decodedText);
+
+    let envId = decodedText;
+
+    if (decodedText.startsWith("http")) {
+      const url = new URL(decodedText);
+      envId = url.searchParams.get("env");
+    }
+
+    const env = await EnviromentalDAO.getById(envId);
+
     selectedEnvironment.value = { id: env.id, name: env.name };
     components.value = env.components || [];
     ticket.value.environmentId = env.id;
     isReporting.value = true;
+
   } catch {
     alert("Ambiente não encontrado.");
   }
 }
+
 
 function onScanFailure() {}
 function stopScanner() {
@@ -106,13 +118,32 @@ function resetForm() {
     componentId: "",
     environmentId: "",
     status: "OPEN",
-    createdById: currentUserId,
+    createdById: userStore.id,
   };
 }
+async function autoSelectEnvironment(envId) {
+  try {
+    const env = await EnviromentalDAO.getById(envId);
+    selectedEnvironment.value = { id: env.id, name: env.name };
+    components.value = env.components || [];
+    ticket.value.environmentId = env.id;
+    isReporting.value = true;
+  } catch {
+    alert("Ambiente não encontrado.");
+  }
+}
+
 
 onMounted(async () => {
-  loadEnvironments();
+  await loadEnvironments();
+
+  const envId = route.query.env;
+
+  if (envId) {
+    await autoSelectEnvironment(envId);
+  }
 });
+
 onBeforeUnmount(stop);
 </script>
 
