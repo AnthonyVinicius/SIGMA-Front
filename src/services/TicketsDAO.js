@@ -7,8 +7,7 @@ class TicketDAO extends GenericDAO {
   }
 
   myTickets() {
-    return this.api.get(`${this.baseURL}/my-tickets`, {
-    });
+    return this.api.get(`${this.baseURL}/my-tickets`, {});
   }
 
   gerarRelatorio(startDate, endDate) {
@@ -17,5 +16,36 @@ class TicketDAO extends GenericDAO {
     });
   }
 }
+
+/*
+  insert(payload) {
+    const formData = new FormData();
+
+    for (const key in payload) {
+      if (payload.hasOwnProperty(key)) {
+        const value = payload[key];
+
+        if (key === "ticketFile" && Array.isArray(value)) {
+          value.forEach((file) => {
+            formData.append("ticketFile", file);
+          });
+        } 
+        else if (value !== null && value !== undefined) {
+          formData.append(key, value);
+        }
+      }
+    }
+
+    const config = { headers: {} };
+    const token = localStorage.getItem('user-token');
+    
+    if (token) {
+      const cleanToken = token.replace(/"/g, ''); 
+      config.headers['Authorization'] = `Bearer ${cleanToken}`;
+    }
+
+    return this.api.post(this.baseURL, formData, config);
+  }
+  */
 
 export default new TicketDAO();
