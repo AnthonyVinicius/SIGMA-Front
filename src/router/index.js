@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useUserStore } from "../stores/user"; // <-- IMPORTANTE
+import { useUserStore } from "../stores/user";
 
 import UserDashboard from "../views/UserDashboard.vue";
 import AdminDashboard from "../views/AdminDashboard.vue";
@@ -20,7 +20,7 @@ const router = createRouter({
       path: "/userDashboard",
       name: "Dashboard",
       component: UserDashboard,
-      meta: { role: "OTHER" }, 
+      meta: { role: "OTHER" },
     },
 
     {
@@ -41,6 +41,7 @@ const router = createRouter({
       name: "reportar-problema",
       component: QrCodeReportView,
     },
+
     {
       path: "/AllReportsUser",
       name: "all-ReportsUser",
@@ -54,12 +55,14 @@ const router = createRouter({
       component: ManageLocalView,
       meta: { role: "ADMIN" },
     },
+
     {
       path: "/locais/:id/itens",
       name: "ItensPorLocal",
       component: () => import("../views/ItensManager.vue"),
       meta: { role: "ADMIN" },
     },
+
     {
       path: "/AllReports",
       name: "all-Reports",
@@ -71,7 +74,9 @@ const router = createRouter({
       path: "/report-create",
       name: "report-create",
       component: FormReportView,
+      meta: { requiresAuth: true },
     },
+
     {
       path: "/registerUser",
       name: "registerUser",
@@ -83,7 +88,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
 
-  if (!userStore.role && to.path !== "/login" && to.path !== "/registerUser") {
+  if (
+    (to.meta.requiresAuth || to.meta.role) &&
+    !userStore.role &&
+    to.path !== "/login" &&
+    to.path !== "/registerUser"
+  ) {
     return next("/login");
   }
 
@@ -95,7 +105,5 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
-
-
 
 export default router;

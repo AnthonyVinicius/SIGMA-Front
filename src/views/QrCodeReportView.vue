@@ -149,34 +149,45 @@ onBeforeUnmount(stop);
 
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-gray-100 relative"
+    class="min-h-screen flex items-center justify-center bg-gray-100 relative px-4 sm:px-6"
   >
-    <div class="flex justify-center">
+    <div class="flex justify-center w-full">
       <div
-        class="w-full max-w-lg space-y-5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+        class="w-full max-w-lg space-y-5
+               rounded-lg border border-gray-200
+               bg-white p-4 sm:p-6
+               shadow-sm"
       >
-        <div class="flex items-start gap-4">
-          <QrCode class="h-10 w-10 text-gray-700" />
+        <div class="flex items-start gap-3 sm:gap-4">
+          <QrCode class="h-8 w-8 sm:h-10 sm:w-10 text-gray-700" />
           <div>
-            <h1 class="text-xl font-bold text-gray-800">Reportar Problema</h1>
-            <p class="text-sm text-gray-500">
+            <h1 class="text-lg sm:text-xl font-bold text-gray-800">
+              Reportar Problema
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-500">
               Escaneie o QR Code do local ou selecione um ambiente abaixo.
             </p>
           </div>
         </div>
+
         <hr />
 
         <div v-if="!isScanning && !isReporting">
           <button
             @click="start"
-            class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-700 py-3 font-bold text-white transition-colors hover:bg-green-800"
+            class="flex w-full items-center justify-center gap-2
+                   rounded-lg bg-green-700
+                   py-3 font-bold text-white
+                   transition-colors hover:bg-green-800"
           >
-            <Camera class="h-6 w-6" />
-            <span>Escanear QR Code</span>
+            <Camera class="h-5 w-5 sm:h-6 sm:w-6" />
+            <span class="text-sm sm:text-base">Escanear QR Code</span>
           </button>
 
           <div class="space-y-3 pt-5">
-            <h2 class="text-sm font-semibold uppercase text-gray-500">
+            <h2
+              class="text-xs sm:text-sm font-semibold uppercase text-gray-500"
+            >
               Acesso Rápido
             </h2>
 
@@ -184,24 +195,29 @@ onBeforeUnmount(stop);
               v-for="(env, i) in environments.slice(0, 5)"
               :key="env.id || i"
               @click="selectEnvironment(env)"
-              class="flex cursor-pointer items-center gap-4 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200"
+              class="flex cursor-pointer items-center gap-3 sm:gap-4
+                     rounded-lg bg-gray-100 p-3
+                     transition-colors hover:bg-gray-200"
             >
-              <MapPin class="h-6 w-6 text-gray-600" />
-              <div>
-                <p class="font-bold text-gray-800">{{ env.name }}</p>
-              </div>
+              <MapPin class="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+              <p class="font-semibold text-sm sm:text-base text-gray-800">
+                {{ env.name }}
+              </p>
             </div>
           </div>
         </div>
 
         <div
           v-else-if="isScanning"
-          class="flex flex-col items-center gap-6 text-center"
+          class="flex flex-col items-center gap-5 text-center"
         >
           <div id="qr-reader" class="w-full"></div>
+
           <button
             @click="stopScanner"
-            class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm"
+            class="bg-[#1C5E27] text-white font-semibold
+                   py-2.5 px-5 rounded-lg
+                   hover:bg-[#154b1f] transition-colors text-sm"
           >
             Cancelar
           </button>
@@ -211,8 +227,10 @@ onBeforeUnmount(stop);
           v-else-if="isReporting"
           class="flex flex-col items-center gap-3 text-center"
         >
-          <h2 class="text-xl font-bold text-gray-800">Reportar Problema</h2>
-          <p class="text-sm text-gray-500">
+          <h2 class="text-lg sm:text-xl font-bold text-gray-800">
+            Reportar Problema
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-500">
             Local selecionado: {{ selectedEnvironment?.name }}
           </p>
 
@@ -221,12 +239,16 @@ onBeforeUnmount(stop);
               v-model="ticket.description"
               placeholder="Descreva o problema"
               rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full px-3 sm:px-4 py-2
+                     border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-2 focus:ring-green-500"
             ></textarea>
 
             <select
               v-model="ticket.priority"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full px-3 sm:px-4 py-2
+                     border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="LOW">Baixa</option>
               <option value="MEDIUM">Média</option>
@@ -235,7 +257,9 @@ onBeforeUnmount(stop);
 
             <select
               v-model="ticket.problemType"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full px-3 sm:px-4 py-2
+                     border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="HARDWARE">Hardware</option>
               <option value="SOFTWARE">Software</option>
@@ -246,7 +270,9 @@ onBeforeUnmount(stop);
             <select
               v-if="components.length > 0"
               v-model="ticket.componentId"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full px-3 sm:px-4 py-2
+                     border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option disabled value="">Selecione o componente</option>
               <option
@@ -259,18 +285,24 @@ onBeforeUnmount(stop);
             </select>
           </div>
 
-          <div class="flex gap-4">
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 w-full sm:w-auto">
             <button
               @click="submitTicket"
               :disabled="isSubmitting"
-              class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm"
+              class="bg-[#1C5E27] text-white font-semibold
+                     py-2.5 px-5 rounded-lg
+                     hover:bg-[#154b1f] transition-colors text-sm
+                     w-full sm:w-auto"
             >
               {{ isSubmitting ? "Enviando..." : "Enviar Chamado" }}
             </button>
 
             <button
               @click="resetForm"
-              class="bg-gray-500 text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-gray-600 transition-colors text-sm"
+              class="bg-gray-500 text-white font-semibold
+                     py-2.5 px-5 rounded-lg
+                     hover:bg-gray-600 transition-colors text-sm
+                     w-full sm:w-auto"
             >
               Cancelar
             </button>
@@ -281,29 +313,16 @@ onBeforeUnmount(stop);
 
     <button
       @click="router.back()"
-      class="bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm absolute bottom-6 right-6"
+      class="bg-[#1C5E27] text-white font-semibold
+             py-2.5 px-4 sm:px-5 rounded-lg
+             hover:bg-[#154b1f] transition-colors text-sm
+             fixed bottom-4 right-4 sm:bottom-6 sm:right-6"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-arrow-big-left"
-      >
-        <path
-          d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z"
-        />
-      </svg>
-
       Voltar
     </button>
   </div>
 </template>
+
 
 <style>
 #qr-reader {

@@ -105,57 +105,114 @@ onMounted(async () => {
 
 <template>
   <BaseLayout>
-    <div class="space-y-10">
-      <header class="border-b pb-6">
-        <h1 class="text-3xl font-bold text-[#1C5E27]">Painel do Administrador</h1>
-        <p class="text-gray-600 mt-1">Gerencie e visualize os chamados do IFPE</p>
+    <div class="space-y-6 sm:space-y-10 px-4 sm:px-6 lg:px-8">
+      <header class="border-b pb-4 sm:pb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#1C5E27]">
+          Painel do Administrador
+        </h1>
+        <p class="text-gray-600 mt-1 text-sm sm:text-base">
+          Gerencie e visualize os chamados do IFPE
+        </p>
       </header>
 
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-        <div v-for="(grafico, titulo) in {
-          'Chamados por Prioridade': chamadosPorPrioridade,
-          'Chamados por Status': chamadosPorStatus,
-          'Chamados por Local': chamadosPorLocal
-        }" :key="titulo"
-          class="bg-white p-6 rounded-lg shadow-sm w-full max-w-sm flex flex-col items-center hover:shadow-md transition">
-          <p class="text-lg font-semibold text-gray-800 mb-3 text-center">{{ titulo }}</p>
-          <BaseChart :chart-data="grafico" chart-type="doughnut" class="w-64 h-64" />
+      <section
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+               gap-6 sm:gap-8 justify-items-center"
+      >
+        <div
+          v-for="(grafico, titulo) in {
+            'Chamados por Prioridade': chamadosPorPrioridade,
+            'Chamados por Status': chamadosPorStatus,
+            'Chamados por Local': chamadosPorLocal
+          }"
+          :key="titulo"
+          class="bg-white p-4 sm:p-6
+                 rounded-lg shadow-sm
+                 w-full max-w-sm
+                 flex flex-col items-center
+                 hover:shadow-md transition"
+        >
+          <p
+            class="text-base sm:text-lg font-semibold
+                   text-gray-800 mb-3 text-center"
+          >
+            {{ titulo }}
+          </p>
+          <BaseChart
+            :chart-data="grafico"
+            chart-type="doughnut"
+            class="w-52 h-52 sm:w-64 sm:h-64"
+          />
         </div>
       </section>
 
-      <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <RouterLink v-for="action in actions" :key="action.title" :to="action.to" class="group">
+      <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <RouterLink
+          v-for="action in actions"
+          :key="action.title"
+          :to="action.to"
+          class="group"
+        >
           <Actions
-            class="bg-white border rounded-lg shadow-sm hover:shadow-md transition transform hover:-translate-y-1">
+            class="bg-white border rounded-lg shadow-sm
+                   hover:shadow-md transition
+                   transform hover:-translate-y-1"
+          >
             <template #logo>
-              <component :is="action.icon"
-                :class="`${action.color} w-10 h-10 group-hover:scale-110 transition-transform`" />
+              <component
+                :is="action.icon"
+                :class="`${action.color}
+                          w-8 h-8 sm:w-10 sm:h-10
+                          group-hover:scale-110 transition-transform`"
+              />
             </template>
+
             <template #title>
-              <span class="text-gray-800 font-semibold">{{ action.title }}</span>
+              <span class="text-gray-800 font-semibold text-sm sm:text-base">
+                {{ action.title }}
+              </span>
             </template>
+
             <template #description>
-              <span class="text-gray-500 text-sm">{{ action.description }}</span>
+              <span class="text-gray-500 text-xs sm:text-sm">
+                {{ action.description }}
+              </span>
             </template>
           </Actions>
         </RouterLink>
       </section>
 
-      <section class="bg-white p-6 rounded-lg shadow-sm">
-        <div class="flex items-center mb-4">
-          <h2 class="text-lg font-semibold text-gray-800">Últimos Chamados Assumidos</h2>
-          <RouterLink to="/allReports" class="ml-auto text-[#1C5E27] hover:underline text-sm font-medium">
+      <section class="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center
+                 mb-4 gap-2"
+        >
+          <h2 class="text-base sm:text-lg font-semibold text-gray-800">
+            Últimos Chamados Assumidos
+          </h2>
+          <RouterLink
+            to="/allReports"
+            class="sm:ml-auto text-[#1C5E27]
+                   hover:underline text-sm font-medium"
+          >
             Ver todos
           </RouterLink>
         </div>
 
-        <div v-if="recentCalls.length === 0" class="text-center py-6 text-gray-500">
+        <div
+          v-if="recentCalls.length === 0"
+          class="text-center py-6 text-gray-500 text-sm sm:text-base"
+        >
           Nenhum chamado registrado recentemente.
         </div>
 
-        <div v-else class="flex flex-col gap-5">
-          <ItensTabelaChamado v-for="(chamado, i) in recentCalls" :key="chamado.id || i"
-            class="border rounded-md p-3 shadow-sm hover:shadow-md transition">
+        <div v-else class="flex flex-col gap-4 sm:gap-5">
+          <ItensTabelaChamado
+            v-for="(chamado, i) in recentCalls"
+            :key="chamado.id || i"
+            class="border rounded-md p-3
+                   shadow-sm hover:shadow-md transition"
+          >
             <template #title>{{ chamado.component?.description }}</template>
             <template #description>{{ chamado.description }}</template>
             <template #location>{{ chamado.environment?.name }}</template>
@@ -163,28 +220,55 @@ onMounted(async () => {
             <template #counter>{{ chamado.counter }}</template>
             <template #date>{{ formatarData(chamado.createdAt) }}</template>
 
-            <div class="relative inline-block text-left w-40">
-              <button @click="toggleDropdown(chamado)"
-                class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
+            <div class="relative inline-block text-left w-full sm:w-40">
+              <button
+                @click="toggleDropdown(chamado)"
+                class="inline-flex justify-between items-center
+                       w-full px-3 py-2 rounded-md
+                       border text-xs sm:text-sm font-medium transition-colors"
                 :class="{
                   'bg-red-100 text-red-700 border-red-300': chamado.status === 'OPEN',
                   'bg-yellow-100 text-yellow-700 border-yellow-300': chamado.status === 'IN_PROGRESS',
                   'bg-orange-100 text-orange-700 border-orange-300': chamado.status === 'PENDING',
                   'bg-green-100 text-green-700 border-green-300': chamado.status === 'RESOLVED',
                   'bg-gray-100 text-gray-700 border-gray-300': chamado.status === 'CLOSED'
-                }">
+                }"
+              >
                 {{ chamado.status }}
-                <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                <svg
+                  class="ml-2 h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
 
-              <div v-show="chamado.showDropdown" class="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10">
+              <div
+                v-show="chamado.showDropdown"
+                class="absolute mt-1 w-full
+                       bg-white border rounded-md
+                       shadow-lg z-10"
+              >
                 <ul>
-                  <li v-for="status in ['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED']" :key="status"
-                    @click="atualizarStatus(chamado.id, status); chamado.showDropdown = false"
-                    class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition">
+                  <li
+                    v-for="status in ['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED']"
+                    :key="status"
+                    @click="
+                      atualizarStatus(chamado.id, status);
+                      chamado.showDropdown = false
+                    "
+                    class="w-full px-3 py-1
+                           text-xs sm:text-sm text-gray-700
+                           cursor-pointer hover:bg-gray-100 transition"
+                  >
                     {{ status }}
                   </li>
                 </ul>
@@ -196,3 +280,4 @@ onMounted(async () => {
     </div>
   </BaseLayout>
 </template>
+

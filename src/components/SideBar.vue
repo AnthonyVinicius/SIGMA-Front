@@ -1,53 +1,57 @@
 <template>
-  <aside :class="[
-    'flex h-screen flex-col overflow-y-auto border-r bg-white transition-all duration-300',
-    isExpanded ? 'w-64 px-5 py-8' : 'w-20 items-center py-8 px-2'
-  ]">
-    <div :class="['flex items-center gap-x-3', isExpanded ? '' : 'justify-center']">
+  <div v-if="isMobile && isDrawerOpen"
+       class="fixed inset-0 bg-black/40 z-40"
+       @click="closeDrawer" />
+
+  <aside
+    :class="[
+      'fixed sm:static z-50 h-screen bg-white border-r transition-transform duration-300',
+      isMobile
+        ? (isDrawerOpen ? 'translate-x-0 w-64 px-5 py-8' : '-translate-x-full w-64')
+        : (isExpanded ? 'w-64 px-5 py-8' : 'w-20 items-center py-8 px-2')
+    ]"
+  >
+    <div class="flex items-center gap-x-3">
       <div class="bg-[#1C5E27] text-white p-2 rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-qr-code">
-          <rect width="5" height="5" x="3" y="3" rx="1" />
-          <rect width="5" height="5" x="16" y="3" rx="1" />
-          <rect width="5" height="5" x="3" y="16" rx="1" />
-          <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
-          <path d="M21 21v.01" />
-          <path d="M12 7v3a2 2 0 0 1-2 2H7" />
-          <path d="M3 12h.01" />
-          <path d="M12 3h.01" />
-          <path d="M12 16v.01" />
-          <path d="M16 12h1" />
-          <path d="M21 12v.01" />
-          <path d="M12 21v-1" />
-        </svg>
+        <QrCode class="w-6 h-6" />
       </div>
-      <span v-show="isExpanded" class="text-xl font-bold text-gray-800 whitespace-nowrap">Chamados</span>
+      <span class="text-xl font-bold text-gray-800 whitespace-nowrap">
+        Chamados
+      </span>
     </div>
 
     <div class="mt-10 flex flex-1 flex-col justify-between">
-      <nav :class="['-mx-3 space-y-3', isExpanded ? '' : 'flex flex-col items-center']">
-        <router-link v-for="item in currentMenu" :key="item.label" :to="item.to" :title="!isExpanded ? item.label : ''"
-          :class="[
-            'flex items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-[#1C5E27] hover:text-white transition-colors',
-            isExpanded ? '' : 'justify-center'
-          ]">
+      <nav class="-mx-3 space-y-3">
+        <router-link
+          v-for="item in currentMenu"
+          :key="item.label"
+          :to="item.to"
+          @click="closeDrawer"
+          class="flex items-center rounded-lg px-3 py-3
+                 text-gray-600 hover:bg-[#1C5E27]
+                 hover:text-white transition-colors"
+        >
           <component :is="item.icon" class="h-6 w-6" />
-          <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">{{ item.label }}</span>
+          <span class="mx-4 text-base font-medium whitespace-nowrap">
+            {{ item.label }}
+          </span>
         </router-link>
       </nav>
 
       <div class="mt-6 border-t pt-4">
-        <div :class="['flex items-center', isExpanded ? 'gap-x-3' : 'justify-center']">
-          <button @click="logout" :title="!isExpanded ? 'Sair' : ''"
-            class="flex w-full items-center rounded-lg px-3 py-3 text-gray-600 hover:bg-red-600 hover:text-white transition-colors"
-            :class="isExpanded ? '' : 'justify-center'">
-            <LogOut class="h-6 w-6" />
-            <span v-show="isExpanded" class="mx-4 text-base font-medium whitespace-nowrap">Sair</span>
-          </button>
-        </div>
+        <button
+          @click="logout"
+          class="flex w-full items-center rounded-lg px-3 py-3
+                 text-gray-600 hover:bg-red-600 hover:text-white transition-colors"
+        >
+          <LogOut class="h-6 w-6" />
+          <span class="mx-4">Sair</span>
+        </button>
 
-        <div v-show="isExpanded" class="flex flex-col gap-3 mt-4 border-t pt-4">
-          <h1 class="text-base font-semibold text-gray-700 whitespace-nowrap">{{ usuarioNome }}</h1>
+        <div class="mt-4 border-t pt-4">
+          <p class="font-semibold text-gray-700">
+            {{ usuarioNome }}
+          </p>
         </div>
       </div>
     </div>
@@ -55,8 +59,10 @@
 </template>
 
 
+
+
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '../stores/user'
 import { ClipboardList, ShieldUser, LogOut, QrCode, MapPin, TextAlignJustify } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
@@ -67,6 +73,37 @@ defineProps({
 
 const router = useRouter()
 const userStore = useUserStore()
+
+const isMobile = ref(false)
+const isDrawerOpen = ref(false)
+
+function checkScreen() {
+  isMobile.value = window.innerWidth < 640
+  if (!isMobile.value) {
+    isDrawerOpen.value = false
+  }
+}
+
+onMounted(() => {
+  checkScreen()
+  window.addEventListener('resize', checkScreen)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreen)
+})
+
+defineExpose({
+  toggleMobileDrawer() {
+    if (isMobile.value) {
+      isDrawerOpen.value = !isDrawerOpen.value
+    }
+  }
+})
+
+function closeDrawer() {
+  isDrawerOpen.value = false
+}
 
 const menuItemsUser = [
   { to: '/userDashboard', label: 'Dashboard', icon: ClipboardList },
@@ -79,18 +116,17 @@ const menuItemsAdmin = [
   { to: '/manageLocals', label: 'Gerenciar Locais', icon: MapPin }
 ]
 
-const currentMenu = computed(() => {
-  return userStore.role === "ADMIN"
-    ? menuItemsAdmin
-    : menuItemsUser
-})
+const currentMenu = computed(() =>
+  userStore.role === 'ADMIN' ? menuItemsAdmin : menuItemsUser
+)
 
-const usuarioNome = computed(() => userStore.name ?? "Usuário")
+const usuarioNome = computed(() => userStore.name ?? 'Usuário')
 
 function logout() {
   userStore.logout()
   router.push('/login')
 }
+
 </script>
 
 

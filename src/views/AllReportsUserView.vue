@@ -1,16 +1,29 @@
 <template>
   <BaseLayout>
-    <div class="space-y-8">
-      <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+    <div class="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8">
+      <header
+        class="flex flex-col sm:flex-row
+               items-start sm:items-center
+               justify-between gap-2 sm:gap-0"
+      >
         <div>
-          <h1 class="text-2xl font-bold text-ponto-if-green">Todos Chamados</h1>
-          <p class="text-gray-600">Gerencie os chamados</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-ponto-if-green">
+            Todos Chamados
+          </h1>
+          <p class="text-sm sm:text-base text-gray-600">
+            Gerencie os chamados
+          </p>
         </div>
       </header>
 
-      <section class="flex flex-col gap-4">
-        <ItensTabelaChamado v-for="(chamado, i) in calls" :key="chamado.id || i"
-          class="bg-white shadow-sm rounded-md p-4 hover:shadow-md transition-shadow">
+      <section class="flex flex-col gap-3 sm:gap-4">
+        <ItensTabelaChamado
+          v-for="(chamado, i) in calls"
+          :key="chamado.id || i"
+          class="bg-white shadow-sm rounded-md
+                 p-3 sm:p-4
+                 hover:shadow-md transition-shadow"
+        >
           <template #title>{{ chamado.component?.description }}</template>
           <template #description>{{ chamado.description }}</template>
           <template #location>{{ chamado.environment?.name }}</template>
@@ -20,14 +33,19 @@
 
           <template #status>
             <div
-              class="inline-flex justify-center items-center px-3 py-2 rounded-md border text-sm font-medium w-40 text-center"
+              class="inline-flex justify-center items-center
+                     px-3 py-1.5
+                     rounded-md border
+                     text-xs sm:text-sm font-medium
+                     w-full sm:w-40 text-center"
               :class="{
                 'bg-red-100 text-red-700 border-red-300': chamado.status === 'OPEN',
                 'bg-yellow-100 text-yellow-700 border-yellow-300': chamado.status === 'IN_PROGRESS',
                 'bg-orange-100 text-orange-700 border-orange-300': chamado.status === 'PENDING',
                 'bg-green-100 text-green-700 border-green-300': chamado.status === 'RESOLVED',
                 'bg-gray-100 text-gray-700 border-gray-300': chamado.status === 'CLOSED'
-              }">
+              }"
+            >
               {{ chamado.status }}
             </div>
           </template>
@@ -36,6 +54,7 @@
     </div>
   </BaseLayout>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from "vue";

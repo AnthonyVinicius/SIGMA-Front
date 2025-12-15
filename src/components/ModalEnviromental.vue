@@ -1,19 +1,31 @@
+```vue
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-[#f0f0f0]"
+    class="fixed inset-0 z-50
+           flex items-center justify-center
+           bg-black/40
+           px-3 sm:px-0"
     @click.self="closeModal"
   >
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+    <div
+      class="bg-white rounded-xl shadow-lg
+             w-full max-w-lg
+             p-4 sm:p-6"
+    >
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-800">
+        <h2 class="text-lg sm:text-xl font-bold text-gray-800">
           {{ isEdit ? "Editar Local" : "Novo Local" }}
         </h2>
-        <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+
+        <button
+          @click="closeModal"
+          class="text-gray-400 hover:text-gray-600"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
+            width="22"
+            height="22"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -27,62 +39,84 @@
         </button>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form @submit.prevent="handleSubmit" class="space-y-3 sm:space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Nome do Local</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Nome do Local
+          </label>
           <input
             v-model="formData.name"
             type="text"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5E27] shadow-sm"
             placeholder="Ex: Sala 101"
+            class="w-full px-3 py-2 text-sm
+                   border border-gray-300 rounded-lg
+                   focus:outline-none focus:ring-2 focus:ring-[#1C5E27]"
           />
+        </div>
 
-          <label class="block text-sm font-medium text-gray-700 mb-1 mt-3"
-            >Bloco</label
-          >
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Bloco
+          </label>
           <input
             v-model="formData.block"
             type="text"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5E27] shadow-sm"
             placeholder="Ex: Bloco C"
+            class="w-full px-3 py-2 text-sm
+                   border border-gray-300 rounded-lg
+                   focus:outline-none focus:ring-2 focus:ring-[#1C5E27]"
           />
+        </div>
 
-          <label class="block text-sm font-medium text-gray-700 mb-1 mt-3"
-            >Categoria</label
-          >
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Categoria
+          </label>
           <select
-            id="category"
             v-model="formData.category"
-            class="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5E27] shadow-sm"
             required
+            class="w-full px-3 py-2 text-sm
+                   border border-gray-300 rounded-lg
+                   text-gray-700
+                   focus:outline-none focus:ring-2 focus:ring-[#1C5E27]"
           >
             <option disabled value="">Selecione a Categoria</option>
             <option
               v-for="category in categories"
               :key="category"
               :value="category"
-              class="text-gray-700"
             >
               {{ translateCategory(category) }}
             </option>
           </select>
         </div>
 
-        <div class="flex gap-3 justify-end pt-2">
+        <div
+          class="flex flex-col-reverse sm:flex-row
+                 gap-2 sm:gap-3
+                 justify-end pt-2"
+        >
           <button
             type="button"
             @click="closeModal"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+            class="w-full sm:w-auto
+                   px-4 py-2
+                   border border-gray-300
+                   rounded-lg text-gray-700
+                   hover:bg-gray-50 transition"
           >
             Cancelar
           </button>
+
           <button
             type="submit"
-            class="px-4 py-2 bg-[#1C5E27] text-white rounded-lg hover:bg-[#154b1f] transition"
+            class="w-full sm:w-auto
+                   px-4 py-2
+                   bg-[#1C5E27] text-white
+                   rounded-lg
+                   hover:bg-[#154b1f] transition"
           >
             {{ isEdit ? "Salvar Alterações" : "Adicionar Local" }}
           </button>
@@ -91,6 +125,8 @@
     </div>
   </div>
 </template>
+```
+
 
 <script setup>
 import { ref, watch } from "vue";

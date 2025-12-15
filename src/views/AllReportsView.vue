@@ -1,16 +1,29 @@
 <template>
   <BaseLayout>
-    <div class="space-y-8">
-      <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+    <div class="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8">
+      <header
+        class="flex flex-col sm:flex-row
+               items-start sm:items-center
+               justify-between gap-2 sm:gap-0"
+      >
         <div>
-          <h1 class="text-2xl font-bold text-ponto-if-green">Todos Chamados</h1>
-          <p class="text-gray-600">Gerencie os chamados</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-ponto-if-green">
+            Todos Chamados
+          </h1>
+          <p class="text-sm sm:text-base text-gray-600">
+            Gerencie os chamados
+          </p>
         </div>
       </header>
 
-      <section class="flex flex-col gap-4">
-        <ItensTabelaChamado v-for="(chamado, i) in calls" :key="chamado.id || i"
-          class="bg-white shadow-sm rounded-md p-4 hover:shadow-md transition-shadow">
+      <section class="flex flex-col gap-3 sm:gap-4">
+        <ItensTabelaChamado
+          v-for="(chamado, i) in calls"
+          :key="chamado.id || i"
+          class="bg-white shadow-sm rounded-md
+                 p-3 sm:p-4
+                 hover:shadow-md transition-shadow"
+        >
           <template #title>{{ chamado.component?.description }}</template>
           <template #description>{{ chamado.description }}</template>
           <template #location>{{ chamado.environment?.name }}</template>
@@ -19,29 +32,59 @@
           <template #date>{{ formatarData(chamado.createdAt) }}</template>
 
           <template #status>
-            <div class="relative inline-block text-left w-40">
-              <button @click="toggleDropdown(chamado)"
-                class="inline-flex justify-between items-center w-full px-3 py-2 rounded-md border text-sm font-medium transition-colors"
+            <div class="relative inline-block text-left w-full sm:w-40 status-dropdown">
+              <button
+                @click.stop="toggleDropdown(chamado)"
+                class="inline-flex justify-between items-center
+                       w-full px-3 py-2
+                       rounded-md border
+                       text-xs sm:text-sm font-medium
+                       transition-colors"
                 :class="{
                   'bg-red-100 text-red-700 border-red-300': chamado.status === 'OPEN',
                   'bg-yellow-100 text-yellow-700 border-yellow-300': chamado.status === 'IN_PROGRESS',
                   'bg-orange-100 text-orange-700 border-orange-300': chamado.status === 'PENDING',
                   'bg-green-100 text-green-700 border-green-300': chamado.status === 'RESOLVED',
                   'bg-gray-100 text-gray-700 border-gray-300': chamado.status === 'CLOSED'
-                }">
-                {{ chamado.status }}
-                <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                }"
+              >
+                <span class="truncate">{{ chamado.status }}</span>
+                <svg
+                  class="ml-2 h-4 w-4 flex-shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
 
-              <div v-show="chamado.showDropdown"
-                class="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10 overflow-hidden">
+              <div
+                v-show="chamado.showDropdown"
+                class="absolute mt-1 w-full
+                       bg-white border rounded-md
+                       shadow-lg z-10 overflow-hidden"
+              >
                 <ul class="w-full">
-                  <li v-for="status in ['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED']" :key="status"
-                    @click="atualizarStatus(chamado, status); chamado.showDropdown = false"
-                    class="w-full px-3 py-1 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 truncate">
+                  <li
+                    v-for="status in ['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED']"
+                    :key="status"
+                    @click="
+                      atualizarStatus(chamado, status);
+                      chamado.showDropdown = false
+                    "
+                    class="w-full px-3 py-1
+                           text-xs sm:text-sm
+                           text-gray-700 cursor-pointer
+                           hover:bg-gray-100 hover:text-gray-900
+                           truncate"
+                  >
                     {{ status }}
                   </li>
                 </ul>
@@ -55,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import TicketsDAO from '../services/TicketsDAO'
 import BaseLayout from '../components/BaseLayout.vue'
 import ItensTabelaChamado from '../components/ItensTabelaChamado.vue'
@@ -81,20 +124,29 @@ async function atualizarStatus(chamado, novoStatus) {
       environmentId: chamado.environment?.id,
       createdById: chamado.createdBy?.id,
       ticketFile: []
-    };
+    }
 
-    console.log(payload)
-    await TicketsDAO.update(chamado.id, payload);
-    chamado.status = novoStatus;
+    await TicketsDAO.update(chamado.id, payload)
+    chamado.status = novoStatus
   } catch (error) {
-    console.error('Error updating status:', error);
+    console.error('Error updating status:', error)
   }
 }
-
 
 function toggleDropdown(chamado) {
   calls.value.forEach(c => (c.showDropdown = false))
   chamado.showDropdown = !chamado.showDropdown
+}
+
+function closeAllDropdowns() {
+  calls.value.forEach(c => (c.showDropdown = false))
+}
+
+function handleClickOutside(event) {
+  const dropdown = event.target.closest('.status-dropdown')
+  if (!dropdown) {
+    closeAllDropdowns()
+  }
 }
 
 function formatarData(isoString) {
@@ -108,5 +160,10 @@ function formatarData(isoString) {
 
 onMounted(async () => {
   await loadTickets()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>

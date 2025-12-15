@@ -1,13 +1,19 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col justify-between">
-    <div class="flex justify-between items-start mb-2 relative">
-      <div class="relative z-0 pointer-events-none">
-        <h2 class="font-semibold text-gray-800 pointer-events-auto">
+  <div
+    class="bg-white border border-gray-200
+           rounded-xl shadow-sm
+           p-4 sm:p-5
+           flex flex-col justify-between
+           gap-3"
+  >
+    <div class="flex justify-between items-start gap-3 relative">
+      <div class="min-w-0">
+        <h2 class="font-semibold text-gray-800 truncate">
           <slot name="title" />
         </h2>
       </div>
 
-      <div class="flex items-center gap-2 z-20 relative">
+      <div class="flex items-center gap-2 flex-shrink-0">
         <button
           class="text-red-500 hover:text-red-700 transition"
           @click.stop="$emit('delete')"
@@ -60,13 +66,19 @@
       </div>
     </div>
 
-    <div class="flex gap-2 mb-3">
-      <p class="text-sm text-gray-600">Categoria:</p>
+    <div class="flex flex-wrap gap-2 text-sm text-gray-600">
+      <span class="font-medium">Categoria:</span>
       <slot name="items" />
     </div>
 
     <button
-      class="w-full bg-[#1C5E27] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 hover:bg-[#154b1f] transition-colors text-sm justify-center"
+      class="w-full bg-[#1C5E27] text-white
+             font-semibold
+             py-2.5 px-5
+             rounded-lg
+             flex items-center justify-center gap-2
+             hover:bg-[#154b1f] transition-colors
+             text-sm"
       @click.stop="$emit('generateQr')"
     >
       <svg
@@ -98,6 +110,7 @@
     </button>
   </div>
 </template>
+
 
 <script setup>
 defineEmits(["delete", "edit", "generateQr"]);
