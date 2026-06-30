@@ -10,7 +10,7 @@ const user = ref({
   registration: null,
   phone: "",
   password: "",
-  role: "OTHER",
+  role: "STUDENT",
 });
 
 const limparForms = () => {
@@ -20,7 +20,7 @@ const limparForms = () => {
     registration: "",
     phone: "",
     password: "",
-    role: "OTHER",
+    role: "STUDENT",
   };
 };
 
@@ -34,6 +34,7 @@ const formatPhone = (value) => {
 };
 
 const submitForm = async () => {
+  console.log("Enviando:", JSON.stringify(user.value, null, 2));
   try {
     if (user.value.password.length < 8) {
       alert("A senha deve conter no mínimo 8 caracteres.");
@@ -58,21 +59,15 @@ onMounted(async () => {
   <div class="flex items-center justify-center min-h-screen px-4 sm:px-6">
     <form
       @submit.prevent="submitForm"
-      class="w-full max-w-md
-             p-6 sm:p-8
-             space-y-3 sm:space-y-4
-             bg-[#1c5e27]
-             rounded-2xl shadow-lg"
+      class="w-full max-w-md p-6 sm:p-8 space-y-3 sm:space-y-4 bg-[#1c5e27] rounded-2xl shadow-lg"
     >
       <div class="text-center">
         <div
-          class="inline-flex items-center justify-center
-                 p-3 sm:p-4 mb-3
-                 bg-white bg-opacity-10 rounded-full"
+          class="inline-flex items-center justify-center p-3 sm:p-4 mb-3 bg-white bg-opacity-10 rounded-full"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6 sm:w-7 sm:h-7  text-green-700"
+            class="w-6 h-6 sm:w-7 sm:h-7 text-green-700"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
@@ -87,9 +82,7 @@ onMounted(async () => {
         <h1 class="text-2xl sm:text-3xl font-bold text-white">SIGMA</h1>
       </div>
 
-      <h2 class="text-lg sm:text-xl font-bold text-white">
-        Cadastrar Usuário
-      </h2>
+      <h2 class="text-lg sm:text-xl font-bold text-white">Cadastrar Usuário</h2>
 
       <div>
         <label class="block text-sm font-medium text-white mb-1">Nome</label>
@@ -97,9 +90,7 @@ onMounted(async () => {
           v-model="user.name"
           type="text"
           maxlength="100"
-          class="w-full px-3 py-2.5
-                 bg-white rounded-lg
-                 focus:ring-2 focus:ring-green-400 focus:outline-none"
+          class="w-full px-3 py-2.5 bg-white rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none"
           required
         />
       </div>
@@ -112,9 +103,7 @@ onMounted(async () => {
           :value="user.phone"
           @input="user.phone = formatPhone($event.target.value)"
           type="text"
-          class="w-full px-3 py-2.5
-                 bg-white rounded-lg
-                 focus:ring-2 focus:ring-green-400 focus:outline-none"
+          class="w-full px-3 py-2.5 bg-white rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none"
           required
         />
       </div>
@@ -125,9 +114,7 @@ onMounted(async () => {
           v-model="user.email"
           type="email"
           maxlength="150"
-          class="w-full px-3 py-2.5
-                 bg-white rounded-lg
-                 focus:ring-2 focus:ring-green-400 focus:outline-none"
+          class="w-full px-3 py-2.5 bg-white rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none"
           required
         />
       </div>
@@ -138,30 +125,24 @@ onMounted(async () => {
           v-model="user.password"
           type="password"
           maxlength="20"
-          class="w-full px-3 py-2.5
-                 bg-white rounded-lg
-                 focus:ring-2 focus:ring-green-400 focus:outline-none"
+          class="w-full px-3 py-2.5 bg-white rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none"
           required
         />
       </div>
 
       <div class="text-sm sm:text-base">
         <span class="text-white">Já possui uma conta?</span>
-        <router-link to="/login" class="ml-1 underline hover:text-green-300 text-white">
+        <router-link
+          to="/login"
+          class="ml-1 underline hover:text-green-300 text-white"
+        >
           Login
         </router-link>
       </div>
 
       <button
         type="submit"
-        class="w-full px-4 py-3
-               font-semibold
-               text-green-700 bg-white
-               rounded-lg
-               hover:bg-gray-200
-               transition
-               focus:outline-none
-               focus:ring-2 focus:ring-gray-300"
+        class="w-full px-4 py-3 font-semibold text-green-700 bg-white rounded-lg hover:bg-gray-200 transition focus:outline-none focus:ring-2 focus:ring-gray-300"
       >
         Registrar-se
       </button>
